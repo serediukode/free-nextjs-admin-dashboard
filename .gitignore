@@ -29,6 +29,9 @@ yarn-error.log*
 # local env files
 .env*.local
 
+# local user data (password hashes — never commit)
+/data/
+
 # vercel
 .vercel
 
