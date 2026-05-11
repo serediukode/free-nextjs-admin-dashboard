@@ -115,6 +115,25 @@ export default function QueuePage() {
                 <td className="px-4 py-3 text-right">
                   <div className="flex justify-end gap-2">
                     <button
+                      disabled={busy === it.id || !it.sku || !it.channel}
+                      onClick={() => {
+                        const fmt =
+                          {
+                            "IG Stories": "ig_stories",
+                            "IG Post": "ig_post",
+                            "IG Reel": "ig_reel",
+                            TikTok: "tiktok",
+                          }[it.channel] || "ig_post";
+                        window.location.href = `/generate?sku=${encodeURIComponent(
+                          it.sku
+                        )}&format=${fmt}`;
+                      }}
+                      className="rounded bg-sky-500 px-2 py-1 text-xs text-white disabled:opacity-50"
+                      title="Trigger generation"
+                    >
+                      Generate
+                    </button>
+                    <button
                       disabled={busy === it.id}
                       onClick={() => setStatus(it, "Approved")}
                       className="rounded bg-emerald-500 px-2 py-1 text-xs text-white disabled:opacity-50"

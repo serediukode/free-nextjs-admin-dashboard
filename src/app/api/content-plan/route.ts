@@ -40,6 +40,7 @@ export async function GET(req: NextRequest) {
         status: p["Status"]?.select?.name || "",
         brief: t(p["Brief"]),
         headline: t(p["Headline UA"]),
+        date: p["Date"]?.date?.start || "",
         last_edited: page.last_edited_time,
       };
     });

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import ModelSwitcher from "@/components/nicom/ModelSwitcher";
 
 type EnvKey = {
   key: string;
@@ -33,6 +34,7 @@ export default function SettingsPage() {
 
   return (
     <div className="space-y-6">
+      <ModelSwitcher />
       <section className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900">
         <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-gray-500">Project</h3>
         <dl className="space-y-2 text-sm">

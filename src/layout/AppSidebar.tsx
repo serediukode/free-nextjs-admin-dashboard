@@ -27,66 +27,17 @@ type NavItem = {
 };
 
 const navItems: NavItem[] = [
-  {
-    icon: <GridIcon />,
-    name: "Live Status",
-    path: "/",
-  },
-  {
-    icon: <ListIcon />,
-    name: "Content Queue",
-    path: "/queue",
-  },
-  {
-    icon: <CalenderIcon />,
-    name: "Calendar",
-    path: "/calendar",
-  },
-  {
-    icon: <BoxCubeIcon />,
-    name: "Generate",
-    path: "/generate",
-  },
-  {
-    icon: <PieChartIcon />,
-    name: "Generation Log",
-    path: "/logs",
-  },
+  { icon: <GridIcon />, name: "Live Status", path: "/" },
+  { icon: <ListIcon />, name: "Content Queue", path: "/queue" },
+  { icon: <CalenderIcon />, name: "Calendar", path: "/calendar" },
+  { icon: <BoxCubeIcon />, name: "Generate", path: "/generate" },
+  { icon: <PieChartIcon />, name: "Generation Log", path: "/logs" },
+  { icon: <UserCircleIcon />, name: "Agents (openclaw)", path: "/agents" },
 ];
 
 const othersItems: NavItem[] = [
-  {
-    icon: <TableIcon />,
-    name: "Brand Data",
-    subItems: [
-      { name: "Products (10)", path: "/brand/products", pro: false },
-      { name: "Brand Lines (4)", path: "/brand/lines", pro: false },
-      { name: "Personas (3)", path: "/brand/personas", pro: false },
-      { name: "Compliance", path: "/brand/compliance", pro: false },
-    ],
-  },
-  {
-    icon: <PageIcon />,
-    name: "Intelligence",
-    subItems: [
-      { name: "Market signals", path: "/intel/market", pro: false },
-      { name: "Competitors", path: "/intel/competitors", pro: false },
-      { name: "Alerts", path: "/intel/alerts", pro: false },
-    ],
-  },
-  {
-    icon: <PlugInIcon />,
-    name: "Settings",
-    path: "/settings",
-  },
-  {
-    icon: <UserCircleIcon />,
-    name: "Account",
-    subItems: [
-      { name: "Sign In", path: "/signin", pro: false },
-      { name: "Sign Up", path: "/signup", pro: false },
-    ],
-  },
+  { icon: <PlugInIcon />, name: "Settings", path: "/settings" },
+  { icon: <PageIcon />, name: "Change password", path: "/change-password" },
 ];
 
 const AppSidebar: React.FC = () => {

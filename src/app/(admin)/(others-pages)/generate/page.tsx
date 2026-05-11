@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 
 const SKUS = [
   "vika-deep-blue",
@@ -19,10 +20,19 @@ const FORMATS = ["ig_post", "ig_stories", "ig_reel", "tiktok", "carousel", "reel
 const MODES = ["local", "auto", "platform", "telegram"];
 
 export default function GeneratePage() {
-  const [sku, setSku] = useState(SKUS[0]);
-  const [format, setFormat] = useState(FORMATS[0]);
+  const params = useSearchParams();
+  const initSku = params.get("sku") || SKUS[0];
+  const initFmt = params.get("format") || FORMATS[0];
+  const [sku, setSku] = useState(SKUS.includes(initSku) ? initSku : SKUS[0]);
+  const [format, setFormat] = useState(FORMATS.includes(initFmt) ? initFmt : FORMATS[0]);
   const [mode, setMode] = useState("local");
   const [running, setRunning] = useState(false);
+  useEffect(() => {
+    const s = params.get("sku");
+    const f = params.get("format");
+    if (s && SKUS.includes(s)) setSku(s);
+    if (f && FORMATS.includes(f)) setFormat(f);
+  }, [params]);
   const [lines, setLines] = useState<string[]>([]);
   const [finishedCode, setFinishedCode] = useState<number | null>(null);
 
