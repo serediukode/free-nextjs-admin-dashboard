@@ -29,8 +29,13 @@ type NavItem = {
 const navItems: NavItem[] = [
   {
     icon: <GridIcon />,
-    name: "Dashboard",
-    subItems: [{ name: "Ecommerce", path: "/", pro: false }],
+    name: "Live Status",
+    path: "/",
+  },
+  {
+    icon: <ListIcon />,
+    name: "Content Queue",
+    path: "/queue",
   },
   {
     icon: <CalenderIcon />,
@@ -38,55 +43,45 @@ const navItems: NavItem[] = [
     path: "/calendar",
   },
   {
-    icon: <UserCircleIcon />,
-    name: "User Profile",
-    path: "/profile",
-  },
-
-  {
-    name: "Forms",
-    icon: <ListIcon />,
-    subItems: [{ name: "Form Elements", path: "/form-elements", pro: false }],
+    icon: <BoxCubeIcon />,
+    name: "Generate",
+    path: "/generate",
   },
   {
-    name: "Tables",
-    icon: <TableIcon />,
-    subItems: [{ name: "Basic Tables", path: "/basic-tables", pro: false }],
-  },
-  {
-    name: "Pages",
-    icon: <PageIcon />,
-    subItems: [
-      { name: "Blank Page", path: "/blank", pro: false },
-      { name: "404 Error", path: "/error-404", pro: false },
-    ],
+    icon: <PieChartIcon />,
+    name: "Generation Log",
+    path: "/logs",
   },
 ];
 
 const othersItems: NavItem[] = [
   {
-    icon: <PieChartIcon />,
-    name: "Charts",
+    icon: <TableIcon />,
+    name: "Brand Data",
     subItems: [
-      { name: "Line Chart", path: "/line-chart", pro: false },
-      { name: "Bar Chart", path: "/bar-chart", pro: false },
+      { name: "Products (10)", path: "/brand/products", pro: false },
+      { name: "Brand Lines (4)", path: "/brand/lines", pro: false },
+      { name: "Personas (3)", path: "/brand/personas", pro: false },
+      { name: "Compliance", path: "/brand/compliance", pro: false },
     ],
   },
   {
-    icon: <BoxCubeIcon />,
-    name: "UI Elements",
+    icon: <PageIcon />,
+    name: "Intelligence",
     subItems: [
-      { name: "Alerts", path: "/alerts", pro: false },
-      { name: "Avatar", path: "/avatars", pro: false },
-      { name: "Badge", path: "/badge", pro: false },
-      { name: "Buttons", path: "/buttons", pro: false },
-      { name: "Images", path: "/images", pro: false },
-      { name: "Videos", path: "/videos", pro: false },
+      { name: "Market signals", path: "/intel/market", pro: false },
+      { name: "Competitors", path: "/intel/competitors", pro: false },
+      { name: "Alerts", path: "/intel/alerts", pro: false },
     ],
   },
   {
     icon: <PlugInIcon />,
-    name: "Authentication",
+    name: "Settings",
+    path: "/settings",
+  },
+  {
+    icon: <UserCircleIcon />,
+    name: "Account",
     subItems: [
       { name: "Sign In", path: "/signin", pro: false },
       { name: "Sign Up", path: "/signup", pro: false },
@@ -238,7 +233,6 @@ const AppSidebar: React.FC = () => {
 
   useEffect(() => {
     // Check if the current path matches any submenu item
-    let submenuMatched = false;
     ["main", "others"].forEach((menuType) => {
       const items = menuType === "main" ? navItems : othersItems;
       items.forEach((nav, index) => {
@@ -249,17 +243,13 @@ const AppSidebar: React.FC = () => {
                 type: menuType as "main" | "others",
                 index,
               });
-              submenuMatched = true;
             }
           });
         }
       });
     });
 
-    // If no submenu item matches, close the open submenu
-    if (!submenuMatched) {
-      setOpenSubmenu(null);
-    }
+    // If no submenu item matches, keep current manual submenu state.
   }, [pathname,isActive]);
 
   useEffect(() => {
