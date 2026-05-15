@@ -20,23 +20,40 @@ const DEFAULTS: Record<string, string> = {
   competitor_monitor: "deepseek-chat",
 };
 
+// Kept in sync with pipeline/models/router.py model sets.
 const AVAILABLE_MODELS = [
+  // Ollama local
   "llama3.2:3b",
   "llama3.1:8b",
   "mistral:7b",
+  "qwen3:8b",
+  "gemma2:9b",
+  // Google Gemini
   "gemini-2.5-flash",
   "gemini-2.0-flash-lite",
   "gemini-2.5-flash-lite",
+  // Anthropic Claude
+  "claude-opus-4-7",
   "claude-sonnet-4-6",
   "claude-haiku-4-5",
+  // DeepSeek
   "deepseek-chat",
   "deepseek-reasoner",
+  // Moonshot Kimi
+  "kimi-k2.6",
+  "kimi-k2.5",
+  "kimi-k2-turbo",
 ];
 
 export async function GET() {
-  const overrides = fs.existsSync(CONFIG_PATH)
+  const raw = fs.existsSync(CONFIG_PATH)
     ? JSON.parse(fs.readFileSync(CONFIG_PATH, "utf-8"))
     : {};
+  // .model-config.json may carry non-string keys like `_rationale` (object).
+  // Strip them so `config` stays Record<string,string> for the UI dropdowns.
+  const overrides: Record<string, string> = Object.fromEntries(
+    Object.entries(raw).filter(([, v]) => typeof v === "string")
+  ) as Record<string, string>;
   const merged: Record<string, string> = { ...DEFAULTS, ...overrides };
   return NextResponse.json({
     config: merged,
