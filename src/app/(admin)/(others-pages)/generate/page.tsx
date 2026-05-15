@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 
 const SKUS = [
@@ -19,7 +19,7 @@ const SKUS = [
 const FORMATS = ["ig_post", "ig_stories", "ig_reel", "tiktok", "carousel", "reels_seed"];
 const MODES = ["local", "auto", "platform", "telegram"];
 
-export default function GeneratePage() {
+function GenerateForm() {
   const params = useSearchParams();
   const initSku = params.get("sku") || SKUS[0];
   const initFmt = params.get("format") || FORMATS[0];
@@ -35,6 +35,30 @@ export default function GeneratePage() {
   }, [params]);
   const [lines, setLines] = useState<string[]>([]);
   const [finishedCode, setFinishedCode] = useState<number | null>(null);
+  const [latest, setLatest] = useState<{ url: string; filename: string; size_kb: number } | null>(null);
+
+  // After pipeline finishes successfully, fetch newest library item for this SKU+format
+  useEffect(() => {
+    if (finishedCode !== 0) return;
+    let cancelled = false;
+    (async () => {
+      // Give filesystem a moment to flush
+      await new Promise((r) => setTimeout(r, 500));
+      const params = new URLSearchParams({ sku, format, limit: "1" });
+      try {
+        const res = await fetch(`/api/library?${params}`, { cache: "no-store" });
+        const json = await res.json();
+        if (cancelled) return;
+        const top = json.items?.[0];
+        if (top) setLatest({ url: top.url, filename: top.filename, size_kb: top.size_kb });
+      } catch {
+        // ignore
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [finishedCode, sku, format]);
 
   async function run() {
     setRunning(true);
@@ -130,26 +154,55 @@ export default function GeneratePage() {
         </div>
       </div>
 
-      <div className="rounded-2xl border border-gray-200 bg-black p-4 font-mono text-xs text-emerald-200 shadow-sm">
-        {lines.length === 0 ? (
-          <span className="text-gray-500">Output will appear here.</span>
-        ) : (
-          lines.map((l, i) => (
-            <div key={i} className="whitespace-pre-wrap">
-              {l}
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+        <div className="rounded-2xl border border-gray-200 bg-black p-4 font-mono text-xs text-emerald-200 shadow-sm lg:col-span-2">
+          {lines.length === 0 ? (
+            <span className="text-gray-500">Output will appear here.</span>
+          ) : (
+            lines.map((l, i) => (
+              <div key={i} className="whitespace-pre-wrap">
+                {l}
+              </div>
+            ))
+          )}
+          {finishedCode !== null && (
+            <div
+              className={`mt-2 font-bold ${
+                finishedCode === 0 ? "text-emerald-300" : "text-rose-400"
+              }`}
+            >
+              [finished] exit code {finishedCode}
             </div>
-          ))
-        )}
-        {finishedCode !== null && (
-          <div
-            className={`mt-2 font-bold ${
-              finishedCode === 0 ? "text-emerald-300" : "text-rose-400"
-            }`}
-          >
-            [finished] exit code {finishedCode}
-          </div>
-        )}
+          )}
+        </div>
+
+        <div className="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-800 dark:bg-gray-900">
+          <h3 className="mb-3 text-xs font-semibold uppercase tracking-wide text-gray-500">Result preview</h3>
+          {latest ? (
+            <div className="space-y-2">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={latest.url} alt={latest.filename} className="w-full rounded-lg border border-gray-200 dark:border-gray-700" />
+              <div className="truncate text-xs text-gray-500">{latest.filename}</div>
+              <div className="flex items-center justify-between text-[10px] text-gray-400">
+                <span>{latest.size_kb} KB</span>
+                <a href="/library" className="text-emerald-600 hover:underline">Open Library →</a>
+              </div>
+            </div>
+          ) : (
+            <div className="flex h-48 items-center justify-center rounded-lg border border-dashed border-gray-300 text-xs text-gray-500 dark:border-gray-700">
+              {running ? "Generating…" : "No result yet"}
+            </div>
+          )}
+        </div>
       </div>
     </div>
+  );
+}
+
+export default function GeneratePage() {
+  return (
+    <Suspense fallback={null}>
+      <GenerateForm />
+    </Suspense>
   );
 }
