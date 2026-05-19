@@ -3,6 +3,38 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme {
+  /* ───── Nicom design tokens (per nicom-product-structure-15may.html) ─────
+     Editorial dark-first. Brand-coded accents. Hairline dividers.        */
+  --font-sans: var(--font-inter), -apple-system, system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains-mono), 'SF Mono', Consolas, monospace;
+  --font-serif: Georgia, 'Times New Roman', serif;
+
+  /* Surface scale — dark */
+  --color-nicom-bg: #0d0d10;
+  --color-nicom-surface: #131318;
+  --color-nicom-elev: #1b1b1f;
+  --color-nicom-border: #2e2e33;
+  --color-nicom-hairline: #232328;
+
+  /* Text scale */
+  --color-nicom-text: #f3f3f7;
+  --color-nicom-muted: #bfbfc9;
+  --color-nicom-faint: #85858f;
+  --color-nicom-dim: #585861;
+
+  /* Brand-line accents — match brand-data/brand-lines.json */
+  --color-vika-main: #0B2A6B;
+  --color-vika-slim: #1FB6FF;
+  --color-sbr: #C8102E;
+  --color-pablo: #00E5FF;
+
+  /* Semantic */
+  --color-ok: #5DCAA5;
+  --color-warn: #F4C659;
+  --color-danger: #E86560;
+  --color-accent: #8F82E2;
+
+  /* TailAdmin legacy preserved below — Nicom takes precedence in components */
   --font-*: initial;
   --font-outfit: Outfit, sans-serif;
 
@@ -38,18 +70,21 @@
   --color-white: #ffffff;
   --color-black: #101828;
 
-  --color-brand-25: #f2f7ff;
-  --color-brand-50: #ecf3ff;
-  --color-brand-100: #dde9ff;
-  --color-brand-200: #c2d6ff;
-  --color-brand-300: #9cb9ff;
-  --color-brand-400: #7592ff;
-  --color-brand-500: #465fff;
-  --color-brand-600: #3641f5;
-  --color-brand-700: #2a31d8;
-  --color-brand-800: #252dae;
-  --color-brand-900: #262e89;
-  --color-brand-950: #161950;
+  /* Brand scale — remapped to Nicom emerald (was TailAdmin blue #465fff).
+     Drives all `.bg-brand-*` / `.text-brand-*` utility usages incl active
+     sidebar items, primary buttons, focus rings, etc. */
+  --color-brand-25: #f0fdf6;
+  --color-brand-50: #e6faec;
+  --color-brand-100: #ccf3da;
+  --color-brand-200: #9fe5bb;
+  --color-brand-300: #6fd49a;
+  --color-brand-400: #5DCAA5;
+  --color-brand-500: #34b07f;
+  --color-brand-600: #1f9968;
+  --color-brand-700: #167d54;
+  --color-brand-800: #126043;
+  --color-brand-900: #0d4030;
+  --color-brand-950: #082420;
 
   --color-blue-light-25: #f5fbff;
   --color-blue-light-50: #f0f9ff;
@@ -64,19 +99,21 @@
   --color-blue-light-900: #0b4a6f;
   --color-blue-light-950: #062c41;
 
+  /* Gray scale — light steps preserved for light-mode pages.
+     Dark steps (700/800/900/950) remapped to Nicom editorial dark. */
   --color-gray-25: #fcfcfd;
   --color-gray-50: #f9fafb;
   --color-gray-100: #f2f4f7;
   --color-gray-200: #e4e7ec;
   --color-gray-300: #d0d5dd;
   --color-gray-400: #98a2b3;
-  --color-gray-500: #667085;
-  --color-gray-600: #475467;
-  --color-gray-700: #344054;
-  --color-gray-800: #1d2939;
-  --color-gray-900: #101828;
-  --color-gray-950: #0c111d;
-  --color-gray-dark: #1a2231;
+  --color-gray-500: #85858f;
+  --color-gray-600: #585861;
+  --color-gray-700: #2e2e33;
+  --color-gray-800: #1b1b1f;
+  --color-gray-900: #131318;
+  --color-gray-950: #0d0d10;
+  --color-gray-dark: #131318;
 
   --color-orange-25: #fffaf5;
   --color-orange-50: #fff6ed;
@@ -749,4 +786,88 @@ span.flatpickr-weekday,
     0 1px 2px 0 rgba(16, 24, 40, 0.06);
   opacity: 0.8;
   cursor: grabbing; /* Changes the cursor to indicate dragging */
+}
+
+/* ─────────── Nicom editorial layer ─────────── */
+
+@layer base {
+  html.dark body {
+    background: var(--color-nicom-bg);
+    color: var(--color-nicom-text);
+    font-family: var(--font-sans);
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  html.dark {
+    color-scheme: dark;
+  }
+}
+
+@layer components {
+  .nicom-chip {
+    @apply inline-flex items-center px-2.5 py-1 rounded text-[10px] font-medium uppercase tracking-wider;
+    background: var(--color-nicom-elev);
+    border: 1px solid var(--color-nicom-border);
+    color: var(--color-nicom-muted);
+  }
+  .nicom-chip-ok { color: var(--color-ok); }
+  .nicom-chip-warn { color: var(--color-warn); }
+  .nicom-chip-danger { color: var(--color-danger); }
+  .nicom-chip-accent { color: var(--color-accent); }
+
+  .nicom-surface {
+    background: var(--color-nicom-surface);
+    border: 1px solid var(--color-nicom-border);
+    border-radius: 10px;
+  }
+  .nicom-elev {
+    background: var(--color-nicom-elev);
+    border: 1px solid var(--color-nicom-border);
+    border-radius: 8px;
+  }
+  .nicom-hairline {
+    border-color: var(--color-nicom-hairline);
+  }
+
+  .nicom-section-num {
+    @apply text-2xl font-bold;
+    color: var(--color-nicom-dim);
+  }
+  .nicom-h4 {
+    @apply text-xs font-semibold uppercase tracking-wider;
+    color: var(--color-nicom-muted);
+  }
+
+  /* Brand-line strip — used per SKU/post */
+  .brand-vika-main {
+    background: rgba(11, 42, 107, 0.3);
+    color: #6b9eff;
+    border: 1px solid rgba(11, 42, 107, 0.6);
+  }
+  .brand-vika-slim {
+    background: rgba(31, 182, 255, 0.15);
+    color: var(--color-vika-slim);
+    border: 1px solid rgba(31, 182, 255, 0.4);
+  }
+  .brand-sbr {
+    background: rgba(200, 16, 46, 0.15);
+    color: #E76A7C;
+    border: 1px solid rgba(200, 16, 46, 0.4);
+  }
+  .brand-pablo {
+    background: rgba(0, 229, 255, 0.1);
+    color: var(--color-pablo);
+    border: 1px solid rgba(0, 229, 255, 0.3);
+  }
+
+  /* Status left-border accents (flow steps, KPI tiles) */
+  .nicom-status-ok { border-left: 3px solid var(--color-ok); }
+  .nicom-status-warn { border-left: 3px solid var(--color-warn); }
+  .nicom-status-danger { border-left: 3px solid var(--color-danger); }
+  .nicom-status-accent { border-left: 3px solid var(--color-accent); }
+
+  .nicom-mono {
+    font-family: var(--font-mono);
+    font-size: 12px;
+  }
 }
