@@ -1,8 +1,13 @@
 import { getNotionToken, NOTION_API, NOTION_VERSION } from "@/lib/nicom-config";
 
-export type NotionPage = { id: string; properties: Record<string, any>; [k: string]: any };
+export type NotionProp = Record<string, unknown>;
+export type NotionPage = {
+  id: string;
+  properties: Record<string, NotionProp>;
+  [k: string]: unknown;
+};
 
-export async function queryNotionDB(dbId: string, body: Record<string, any> = {}) {
+export async function queryNotionDB(dbId: string, body: Record<string, unknown> = {}) {
   const token = getNotionToken();
   if (!token) throw new Error("NOTION_TOKEN not set");
   const res = await fetch(`${NOTION_API}/databases/${dbId}/query`, {
@@ -18,22 +23,42 @@ export async function queryNotionDB(dbId: string, body: Record<string, any> = {}
   return (await res.json()) as { results: NotionPage[] };
 }
 
-export const t = (prop: any): string =>
-  (prop?.title?.[0]?.plain_text || prop?.rich_text?.[0]?.plain_text || "").trim();
+// Notion property accessors — use unknown then narrow via optional chaining.
+type AnyProp = unknown;
+function asObj(p: AnyProp): Record<string, unknown> | undefined {
+  return p && typeof p === "object" ? (p as Record<string, unknown>) : undefined;
+}
 
-export const sel = (prop: any): string => prop?.select?.name || "";
+export const t = (prop: AnyProp): string => {
+  const o = asObj(prop);
+  const title = (o?.title as Array<{ plain_text?: string }> | undefined)?.[0]?.plain_text;
+  const rich = (o?.rich_text as Array<{ plain_text?: string }> | undefined)?.[0]?.plain_text;
+  return (title || rich || "").trim();
+};
 
-export const multi = (prop: any): string[] =>
-  (prop?.multi_select || []).map((s: any) => s.name);
+export const sel = (prop: AnyProp): string =>
+  ((asObj(prop)?.select as { name?: string } | undefined)?.name) || "";
 
-export const num = (prop: any): number | null =>
-  prop?.number === null || prop?.number === undefined ? null : prop.number;
+export const multi = (prop: AnyProp): string[] => {
+  const arr = asObj(prop)?.multi_select as Array<{ name?: string }> | undefined;
+  return (arr || []).map((s) => s.name || "").filter(Boolean);
+};
 
-export const chk = (prop: any): boolean => Boolean(prop?.checkbox);
+export const num = (prop: AnyProp): number | null => {
+  const v = asObj(prop)?.number;
+  return v === null || v === undefined ? null : (v as number);
+};
 
-export const date = (prop: any): string => prop?.date?.start || "";
+export const chk = (prop: AnyProp): boolean =>
+  Boolean(asObj(prop)?.checkbox);
 
-export const url = (prop: any): string => prop?.url || "";
+export const date = (prop: AnyProp): string =>
+  ((asObj(prop)?.date as { start?: string } | undefined)?.start) || "";
 
-export const rel = (prop: any): string[] =>
-  (prop?.relation || []).map((r: any) => r.id);
+export const url = (prop: AnyProp): string =>
+  (asObj(prop)?.url as string | undefined) || "";
+
+export const rel = (prop: AnyProp): string[] => {
+  const arr = asObj(prop)?.relation as Array<{ id?: string }> | undefined;
+  return (arr || []).map((r) => r.id || "").filter(Boolean);
+};

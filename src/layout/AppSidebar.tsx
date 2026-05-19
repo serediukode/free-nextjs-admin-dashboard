@@ -14,7 +14,6 @@ import {
   PageIcon,
   PieChartIcon,
   PlugInIcon,
-  TableIcon,
   UserCircleIcon,
 } from "../icons/index";
 import SidebarWidget from "./SidebarWidget";
@@ -32,7 +31,8 @@ const navItems: NavItem[] = [
   { icon: <CalenderIcon />, name: "Calendar", path: "/calendar" },
   { icon: <BoxCubeIcon />, name: "Generate", path: "/generate" },
   { icon: <PieChartIcon />, name: "Generation Log", path: "/logs" },
-  { icon: <UserCircleIcon />, name: "Agents (openclaw)", path: "/agents" },
+  { icon: <UserCircleIcon />, name: "AI Agents", path: "/agents" },
+  { icon: <BoxCubeIcon />, name: "Library", path: "/library" },
 ];
 
 const othersItems: NavItem[] = [

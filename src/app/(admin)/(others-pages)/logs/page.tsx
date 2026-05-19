@@ -28,7 +28,7 @@ export default function LogsPage() {
       if (!res.ok) throw new Error(json.error || `HTTP ${res.status}`);
       setItems(json.items || []);
       setErr(null);
-    } catch (e: any) {
+    } catch (e) {
       setErr(String(e));
     }
   }
@@ -138,6 +138,7 @@ export default function LogsPage() {
               <div className="rounded-lg bg-gray-50 p-3 dark:bg-gray-800">
                 {selected.output_url ? (
                   <a href={selected.output_url} target="_blank" rel="noreferrer">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={selected.output_url}
                       alt="output"

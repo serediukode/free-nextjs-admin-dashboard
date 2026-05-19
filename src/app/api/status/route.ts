@@ -35,6 +35,9 @@ function n8nProcess(): { pid: number | null; alive: boolean } {
 }
 
 function queueStats() {
+  // Graceful empty-shape when the daemon hasn't created state.db yet —
+  // dashboard renders blank tiles instead of error.
+  const empty = { counts: {} as Record<string, number>, unsentAlerts: 0, lastHeartbeats: [] };
   try {
     const db = new Database(NICOM_STATE_DB, { readonly: true, fileMustExist: true });
     const counts: Record<string, number> = {};
@@ -54,7 +57,12 @@ function queueStats() {
     db.close();
     return { counts, unsentAlerts, lastHeartbeats };
   } catch (err) {
-    return { error: String(err) };
+    const msg = String(err);
+    // Missing DB / missing tables → return empty shape (not an error condition)
+    if (msg.includes("unable to open database") || msg.includes("no such table")) {
+      return empty;
+    }
+    return { ...empty, error: msg };
   }
 }
 

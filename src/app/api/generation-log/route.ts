@@ -5,6 +5,7 @@ import {
   NOTION_GENERATION_LOG_DB,
   NOTION_VERSION,
 } from "@/lib/nicom-config";
+import { t, sel, num, chk, url, type NotionPage } from "@/lib/notion";
 
 export const dynamic = "force-dynamic";
 
@@ -26,27 +27,25 @@ export async function GET() {
       }),
     });
     if (!res.ok) return NextResponse.json({ error: await res.text() }, { status: res.status });
-    const data = await res.json();
-    const items = (data.results || []).map((page: any) => {
+    const data = (await res.json()) as { results?: NotionPage[] };
+    const items = (data.results || []).map((page) => {
       const p = page.properties || {};
-      const t = (prop: any) =>
-        (prop?.title?.[0]?.plain_text || prop?.rich_text?.[0]?.plain_text || "").trim();
       return {
         id: page.id,
         title: t(p["Log Name"]),
         sku: t(p["SKU ID"]),
-        format: p["Format"]?.select?.name || "",
-        model: p["Model"]?.select?.name || "",
-        compliance_pass: Boolean(p["Compliance Pass"]?.checkbox),
-        human_approved: Boolean(p["Human Approved"]?.checkbox),
-        cost_usd: p["Cost USD"]?.number ?? null,
-        output_url: p["Output URL"]?.url || "",
+        format: sel(p["Format"]),
+        model: sel(p["Model"]),
+        compliance_pass: chk(p["Compliance Pass"]),
+        human_approved: chk(p["Human Approved"]),
+        cost_usd: num(p["Cost USD"]),
+        output_url: url(p["Output URL"]),
         notes: t(p["Notes"]),
-        created: page.created_time,
+        created: (page as unknown as { created_time?: string }).created_time,
       };
     });
     return NextResponse.json({ items });
-  } catch (err: any) {
+  } catch (err) {
     return NextResponse.json({ error: String(err) }, { status: 500 });
   }
 }

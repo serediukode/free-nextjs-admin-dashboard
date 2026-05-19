@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getNotionToken, NOTION_API, NOTION_CONTENT_PLAN_DB, NOTION_VERSION } from "@/lib/nicom-config";
+import { t, sel, date, type NotionPage } from "@/lib/notion";
 
 export const dynamic = "force-dynamic";
 
@@ -26,26 +27,24 @@ export async function GET(req: NextRequest) {
       const text = await res.text();
       return NextResponse.json({ error: text }, { status: res.status });
     }
-    const data = await res.json();
-    const items = (data.results || []).map((page: any) => {
+    const data = (await res.json()) as { results?: NotionPage[] };
+    const items = (data.results || []).map((page) => {
       const p = page.properties || {};
-      const t = (prop: any) =>
-        (prop?.title?.[0]?.text?.content || prop?.rich_text?.[0]?.text?.content || "").trim();
       return {
         id: page.id,
         title: t(p["Post Title"]) || t(p["Name"]),
         sku: t(p["SKU"]),
-        channel: p["Channel"]?.select?.name || "",
-        brand: p["Brand"]?.select?.name || "",
-        status: p["Status"]?.select?.name || "",
+        channel: sel(p["Channel"]),
+        brand: sel(p["Brand"]),
+        status: sel(p["Status"]),
         brief: t(p["Brief"]),
         headline: t(p["Headline UA"]),
-        date: p["Date"]?.date?.start || "",
-        last_edited: page.last_edited_time,
+        date: date(p["Date"]),
+        last_edited: (page as unknown as { last_edited_time?: string }).last_edited_time,
       };
     });
     return NextResponse.json({ items });
-  } catch (err: any) {
+  } catch (err) {
     return NextResponse.json({ error: String(err) }, { status: 500 });
   }
 }

@@ -30,13 +30,15 @@ export default function QueuePage() {
       if (!res.ok) throw new Error(json.error || `HTTP ${res.status}`);
       setItems(json.items || []);
       setErr(null);
-    } catch (e: any) {
+    } catch (e) {
       setErr(String(e));
     }
   }
 
   useEffect(() => {
     load();
+    // load is a stable closure here — listing filter as the only trigger is intentional.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filter]);
 
   async function setStatus(item: ContentPlanItem, status: string) {
@@ -49,7 +51,7 @@ export default function QueuePage() {
       });
       if (!res.ok) throw new Error(await res.text());
       await load();
-    } catch (e: any) {
+    } catch (e) {
       setErr(String(e));
     } finally {
       setBusy(null);

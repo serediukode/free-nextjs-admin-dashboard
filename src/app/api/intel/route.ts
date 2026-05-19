@@ -8,7 +8,7 @@ export async function GET(req: NextRequest) {
   const kind = req.nextUrl.searchParams.get("kind") || "market";
   try {
     const db = new Database(NICOM_STATE_DB, { readonly: true, fileMustExist: true });
-    let rows: any[] = [];
+    let rows: unknown[] = [];
     if (kind === "market") {
       rows = db.prepare("SELECT * FROM market_intel ORDER BY rowid DESC LIMIT 100").all();
     } else if (kind === "competitors_snapshots") {
@@ -25,8 +25,11 @@ export async function GET(req: NextRequest) {
     }
     db.close();
     return NextResponse.json({ items: rows });
-  } catch (err: any) {
-    return NextResponse.json({ error: String(err.message || err) }, { status: 500 });
+  } catch (err) {
+    return NextResponse.json(
+      { error: err instanceof Error ? err.message : String(err) },
+      { status: 500 }
+    );
   }
 }
 
@@ -41,7 +44,10 @@ export async function POST(req: NextRequest) {
     tx(ids);
     db.close();
     return NextResponse.json({ ok: true, count: ids.length });
-  } catch (err: any) {
-    return NextResponse.json({ error: String(err.message || err) }, { status: 500 });
+  } catch (err) {
+    return NextResponse.json(
+      { error: err instanceof Error ? err.message : String(err) },
+      { status: 500 }
+    );
   }
 }

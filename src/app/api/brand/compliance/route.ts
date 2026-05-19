@@ -12,7 +12,7 @@ export async function GET() {
       return NextResponse.json({ error: `not found: ${file}` }, { status: 404 });
     const data = JSON.parse(fs.readFileSync(file, "utf-8"));
     return NextResponse.json(data);
-  } catch (err: any) {
-    return NextResponse.json({ error: String(err.message || err) }, { status: 500 });
+  } catch (err) {
+    return NextResponse.json({ error: err instanceof Error ? err.message : String(err) }, { status: 500 });
   }
 }

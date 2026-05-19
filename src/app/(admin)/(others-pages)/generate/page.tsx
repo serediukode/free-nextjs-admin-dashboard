@@ -92,7 +92,7 @@ function GenerateForm() {
           else if (payload.line) setLines((prev) => [...prev, payload.line]);
         }
       }
-    } catch (e: any) {
+    } catch (e) {
       setLines((prev) => [...prev, `[error] ${String(e)}`]);
     } finally {
       setRunning(false);

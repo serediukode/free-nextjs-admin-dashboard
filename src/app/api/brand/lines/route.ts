@@ -28,7 +28,7 @@ export async function GET() {
       };
     });
     return NextResponse.json({ items });
-  } catch (err: any) {
-    return NextResponse.json({ error: String(err.message || err) }, { status: 500 });
+  } catch (err) {
+    return NextResponse.json({ error: err instanceof Error ? err.message : String(err) }, { status: 500 });
   }
 }

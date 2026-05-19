@@ -12,7 +12,8 @@ export const NOTION_API = "https://api.notion.com/v1";
 export const NOTION_VERSION = "2022-06-28";
 
 export function loadEnvFile(path: string): Record<string, string> {
-  const fs = require("fs");
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const fs: typeof import("fs") = require("fs");
   if (!fs.existsSync(path)) return {};
   const out: Record<string, string> = {};
   for (const line of fs.readFileSync(path, "utf-8").split("\n")) {

@@ -22,7 +22,7 @@ export async function POST(req: NextRequest) {
     });
     if (!res.ok) return NextResponse.json({ error: await res.text() }, { status: res.status });
     return NextResponse.json({ ok: true });
-  } catch (err: any) {
+  } catch (err) {
     return NextResponse.json({ error: String(err) }, { status: 500 });
   }
 }
