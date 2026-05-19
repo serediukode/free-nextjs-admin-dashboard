@@ -50,7 +50,7 @@ export default function LiveStatus() {
           setData(json);
           setErr(null);
         }
-      } catch (e: any) {
+      } catch (e) {
         if (!cancelled) setErr(String(e));
       }
     }

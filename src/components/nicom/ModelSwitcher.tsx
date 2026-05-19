@@ -33,7 +33,7 @@ export default function ModelSwitcher() {
     try {
       const r = await fetch("/api/models", { cache: "no-store" });
       setData(await r.json());
-    } catch (e: any) {
+    } catch (e) {
       setErr(String(e));
     }
   }
@@ -55,7 +55,7 @@ export default function ModelSwitcher() {
         throw new Error(j.error || `HTTP ${r.status}`);
       }
       await load();
-    } catch (e: any) {
+    } catch (e) {
       setErr(String(e));
     } finally {
       setBusy(null);
