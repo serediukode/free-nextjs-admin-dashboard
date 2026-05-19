@@ -14,25 +14,62 @@ type StatusPayload = {
   now: string;
 };
 
-function Card({ children, title }: { children: React.ReactNode; title: string }) {
+function Surface({
+  num,
+  title,
+  hint,
+  children,
+  accent,
+}: {
+  num: string;
+  title: string;
+  hint?: string;
+  children: React.ReactNode;
+  accent?: "ok" | "warn" | "danger" | "accent";
+}) {
+  const borderClass =
+    accent === "ok"
+      ? "nicom-status-ok"
+      : accent === "warn"
+        ? "nicom-status-warn"
+        : accent === "danger"
+          ? "nicom-status-danger"
+          : accent === "accent"
+            ? "nicom-status-accent"
+            : "";
   return (
-    <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900">
-      <h3 className="mb-4 text-sm font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
-        {title}
-      </h3>
+    <section className={`nicom-surface p-5 ${borderClass}`}>
+      <header className="mb-4 flex items-baseline gap-3 border-b nicom-hairline pb-3">
+        <span className="nicom-section-num">{num}</span>
+        <h3 className="text-base font-semibold text-[var(--color-nicom-text)]">{title}</h3>
+        {hint && <span className="nicom-chip ml-auto">{hint}</span>}
+      </header>
       {children}
-    </div>
+    </section>
   );
 }
 
 function Dot({ ok }: { ok: boolean }) {
   return (
     <span
-      className={`inline-block size-2.5 rounded-full ${
-        ok ? "bg-emerald-500" : "bg-rose-500"
-      }`}
+      className="inline-block size-2 rounded-full"
+      style={{ background: ok ? "var(--color-ok)" : "var(--color-danger)" }}
     />
   );
+}
+
+function fmtAgo(iso?: string): string {
+  if (!iso) return "—";
+  const t = new Date(iso).getTime();
+  if (Number.isNaN(t)) return "—";
+  const diff = Date.now() - t;
+  const s = Math.floor(diff / 1000);
+  if (s < 60) return `${s}s`;
+  const m = Math.floor(s / 60);
+  if (m < 60) return `${m}m`;
+  const h = Math.floor(m / 60);
+  if (h < 24) return `${h}h`;
+  return `${Math.floor(h / 24)}d`;
 }
 
 export default function LiveStatus() {
@@ -62,99 +99,134 @@ export default function LiveStatus() {
     };
   }, []);
 
-  if (err) return <div className="text-rose-500">Error: {err}</div>;
-  if (!data) return <div>Loading…</div>;
+  if (err) return <div className="text-[var(--color-danger)]">Error: {err}</div>;
+  if (!data) return <div className="text-[var(--color-nicom-faint)]">Loading…</div>;
 
   const queue = "error" in data.queue ? null : data.queue;
 
   return (
-    <div className="grid grid-cols-12 gap-4 md:gap-6">
-      <div className="col-span-12 md:col-span-6">
-        <Card title="Services">
-          <ul className="space-y-3">
-            {data.services.map((s) => (
-              <li key={s.name} className="flex items-center justify-between text-sm">
+    <div className="space-y-4">
+      {/* Hero strip */}
+      <div className="flex flex-wrap items-center gap-2 text-[var(--color-nicom-muted)]">
+        <span className="nicom-chip">LIVE STATUS</span>
+        <span className="nicom-chip nicom-chip-accent">v0.9.8</span>
+        <span className="nicom-chip nicom-chip-ok">5s POLL</span>
+        <span className="ml-auto nicom-mono text-[var(--color-nicom-faint)]">
+          {new Date(data.now).toLocaleTimeString()}
+        </span>
+      </div>
+
+      <div className="grid grid-cols-12 gap-4">
+        <div className="col-span-12 md:col-span-6">
+          <Surface num="01" title="Services" accent="ok" hint={`${data.services.filter((s) => s.alive).length}/${data.services.length} alive`}>
+            <ul className="space-y-3">
+              {data.services.map((s) => (
+                <li
+                  key={s.name}
+                  className="flex items-center justify-between text-sm"
+                >
+                  <span className="flex items-center gap-2">
+                    <Dot ok={s.alive} />
+                    <span className="nicom-mono text-[var(--color-nicom-text)]">{s.name}</span>
+                  </span>
+                  <span className="nicom-mono text-[var(--color-nicom-faint)]">
+                    {s.alive ? `pid ${s.pid}` : `exit ${s.lastExit ?? "—"}`}
+                  </span>
+                </li>
+              ))}
+              <li className="flex items-center justify-between text-sm">
                 <span className="flex items-center gap-2">
-                  <Dot ok={s.alive} />
-                  <span className="font-mono">{s.name}</span>
+                  <Dot ok={data.n8n.alive} />
+                  <span className="nicom-mono text-[var(--color-nicom-text)]">n8n</span>
                 </span>
-                <span className="text-gray-500">
-                  {s.alive ? `PID ${s.pid}` : `exit ${s.lastExit ?? "—"}`}
+                <span className="nicom-mono text-[var(--color-nicom-faint)]">
+                  {data.n8n.alive ? `pid ${data.n8n.pid}` : "down"}
                 </span>
               </li>
-            ))}
-            <li className="flex items-center justify-between text-sm">
-              <span className="flex items-center gap-2">
-                <Dot ok={data.n8n.alive} />
-                <span className="font-mono">n8n</span>
-              </span>
-              <span className="text-gray-500">
-                {data.n8n.alive ? `PID ${data.n8n.pid}` : "down"}
-              </span>
-            </li>
-          </ul>
-        </Card>
-      </div>
+            </ul>
+          </Surface>
+        </div>
 
-      <div className="col-span-12 md:col-span-6">
-        <Card title="Content Queue (SQLite)">
-          {queue ? (
-            <>
-              <div className="grid grid-cols-3 gap-3">
-                {(["pending", "processing", "done"] as const).map((k) => (
-                  <div
-                    key={k}
-                    className="rounded-lg bg-gray-50 p-3 text-center dark:bg-gray-800"
+        <div className="col-span-12 md:col-span-6">
+          <Surface num="02" title="Content Queue" accent="accent" hint="SQLite">
+            {queue ? (
+              <>
+                <div className="grid grid-cols-3 gap-3">
+                  {(["pending", "processing", "done"] as const).map((k) => (
+                    <div key={k} className="nicom-elev p-3 text-center">
+                      <div className="font-mono text-2xl font-bold text-[var(--color-nicom-text)]">
+                        {queue.counts[k] ?? 0}
+                      </div>
+                      <div className="mt-1 text-[10px] uppercase tracking-wider text-[var(--color-nicom-faint)]">
+                        {k}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <div className="mt-4 flex items-center justify-between text-sm">
+                  <span className="text-[var(--color-nicom-muted)]">Unsent alerts</span>
+                  <span
+                    className="nicom-mono font-semibold"
+                    style={{ color: queue.unsentAlerts > 0 ? "var(--color-warn)" : "var(--color-ok)" }}
                   >
-                    <div className="text-2xl font-bold">{queue.counts[k] ?? 0}</div>
-                    <div className="text-xs uppercase tracking-wide text-gray-500">{k}</div>
-                  </div>
-                ))}
+                    {queue.unsentAlerts}
+                  </span>
+                </div>
+              </>
+            ) : (
+              <div className="text-sm text-[var(--color-nicom-faint)]">
+                state.db not initialised — daemon will create on first run
               </div>
-              <div className="mt-4 text-sm">
-                Unsent alerts:{" "}
-                <span className="font-semibold text-amber-600">{queue.unsentAlerts}</span>
-              </div>
-            </>
-          ) : (
-            <div className="text-sm text-rose-500">{(data.queue as { error: string }).error}</div>
-          )}
-        </Card>
-      </div>
+            )}
+          </Surface>
+        </div>
 
-      <div className="col-span-12">
-        <Card title="Agent Heartbeats">
-          {queue && queue.lastHeartbeats?.length ? (
-            <table className="w-full text-sm">
-              <thead className="text-left text-xs uppercase tracking-wide text-gray-500">
-                <tr>
-                  <th className="pb-2">Agent</th>
-                  <th className="pb-2">Status</th>
-                  <th className="pb-2">Last heartbeat</th>
-                </tr>
-              </thead>
-              <tbody>
-                {queue.lastHeartbeats.map((h) => (
-                  <tr key={h.agent_id} className="border-t border-gray-100 dark:border-gray-800">
-                    <td className="py-2 font-mono">{h.agent_id}</td>
-                    <td className="py-2">
-                      <span className="rounded bg-gray-100 px-2 py-0.5 text-xs dark:bg-gray-800">
-                        {h.status}
-                      </span>
-                    </td>
-                    <td className="py-2 text-gray-500">{h.ts}</td>
+        <div className="col-span-12">
+          <Surface
+            num="03"
+            title="Agent Heartbeats"
+            accent="warn"
+            hint={`${queue?.lastHeartbeats?.length || 0} agents`}
+          >
+            {queue && queue.lastHeartbeats?.length ? (
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="text-left text-[10px] uppercase tracking-wider text-[var(--color-nicom-faint)]">
+                    <th className="pb-2 font-medium">Agent</th>
+                    <th className="pb-2 font-medium">Status</th>
+                    <th className="pb-2 font-medium">Last heartbeat</th>
+                    <th className="pb-2 font-medium text-right">Age</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          ) : (
-            <div className="text-sm text-gray-500">No heartbeats yet.</div>
-          )}
-        </Card>
-      </div>
-
-      <div className="col-span-12 text-right text-xs text-gray-400">
-        Updated {new Date(data.now).toLocaleTimeString()}
+                </thead>
+                <tbody>
+                  {queue.lastHeartbeats.map((h) => (
+                    <tr
+                      key={h.agent_id}
+                      className="border-t border-[var(--color-nicom-hairline)]"
+                    >
+                      <td className="py-2.5 nicom-mono text-[var(--color-nicom-text)]">
+                        {h.agent_id}
+                      </td>
+                      <td className="py-2.5">
+                        <span className="nicom-chip nicom-chip-ok">{h.status}</span>
+                      </td>
+                      <td className="py-2.5 nicom-mono text-[10px] text-[var(--color-nicom-faint)]">
+                        {h.ts}
+                      </td>
+                      <td className="py-2.5 nicom-mono text-right text-[var(--color-nicom-muted)]">
+                        {fmtAgo(h.ts)}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            ) : (
+              <div className="text-sm text-[var(--color-nicom-faint)]">
+                No heartbeats yet — start daemon to populate.
+              </div>
+            )}
+          </Surface>
+        </div>
       </div>
     </div>
   );
