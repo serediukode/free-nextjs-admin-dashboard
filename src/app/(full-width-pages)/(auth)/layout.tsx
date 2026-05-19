@@ -2,7 +2,6 @@ import GridShape from "@/components/common/GridShape";
 import ThemeTogglerTwo from "@/components/common/ThemeTogglerTwo";
 
 import { ThemeProvider } from "@/context/ThemeContext";
-import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 
@@ -22,15 +21,17 @@ export default function AuthLayout({
               <GridShape />
               <div className="flex flex-col items-center max-w-xs">
                 <Link href="/" className="block mb-4">
-                  <Image
-                    width={231}
-                    height={48}
-                    src="./images/logo/auth-logo.svg"
-                    alt="Logo"
-                  />
+                  <div className="flex items-center gap-3">
+                    <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald-500 text-white font-bold text-2xl">
+                      N
+                    </span>
+                    <span className="text-3xl font-semibold text-white tracking-tight">
+                      NICOM
+                    </span>
+                  </div>
                 </Link>
                 <p className="text-center text-gray-400 dark:text-white/60">
-                  Free and Open-Source Tailwind CSS Admin Dashboard Template
+                  AI SMM Factory · VIKA · SBR · Pablo
                 </p>
               </div>
             </div>
