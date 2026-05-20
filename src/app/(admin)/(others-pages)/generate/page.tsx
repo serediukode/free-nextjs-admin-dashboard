@@ -19,6 +19,8 @@ const SKUS = [
 const FORMATS = ["ig_post", "ig_stories", "ig_reel", "tiktok", "carousel", "reels_seed"];
 const MODES = ["local", "auto", "platform", "telegram"];
 
+const STORAGE_KEY = "nicom-generate-session";
+
 function GenerateForm() {
   const params = useSearchParams();
   const initSku = params.get("sku") || SKUS[0];
@@ -36,6 +38,28 @@ function GenerateForm() {
   const [lines, setLines] = useState<string[]>([]);
   const [finishedCode, setFinishedCode] = useState<number | null>(null);
   const [latest, setLatest] = useState<{ url: string; filename: string; size_kb: number } | null>(null);
+
+  // Restore from sessionStorage on mount
+  useEffect(() => {
+    try {
+      const saved = sessionStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        const { lines: l, finishedCode: fc, latest: lt, sku: s, format: f } = JSON.parse(saved);
+        if (l?.length) setLines(l);
+        if (fc !== undefined) setFinishedCode(fc);
+        if (lt) setLatest(lt);
+        if (s && SKUS.includes(s)) setSku(s);
+        if (f && FORMATS.includes(f)) setFormat(f);
+      }
+    } catch {}
+  }, []);
+
+  // Persist to sessionStorage whenever state changes
+  useEffect(() => {
+    try {
+      sessionStorage.setItem(STORAGE_KEY, JSON.stringify({ lines, finishedCode, latest, sku, format }));
+    } catch {}
+  }, [lines, finishedCode, latest, sku, format]);
 
   // After pipeline finishes successfully, fetch newest library item for this SKU+format
   useEffect(() => {
@@ -140,14 +164,21 @@ function GenerateForm() {
               ))}
             </select>
           </label>
-          <div className="flex items-end">
+          <div className="flex items-end gap-2">
             <button
               disabled={running}
               onClick={run}
               className="btn-onyx-primary"
-              style={{ width: "100%", justifyContent: "center", padding: "10px 16px", fontSize: "11px" }}
+              style={{ flex: 1, justifyContent: "center", padding: "10px 16px", fontSize: "11px" }}
             >
               {running ? "Running…" : "Run pipeline"}
+            </button>
+            <button
+              onClick={() => { setLines([]); setFinishedCode(null); setLatest(null); sessionStorage.removeItem(STORAGE_KEY); }}
+              className="btn-onyx-ghost"
+              style={{ padding: "10px 16px", fontSize: "11px" }}
+            >
+              Clear
             </button>
           </div>
         </div>

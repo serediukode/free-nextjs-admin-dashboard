@@ -72,6 +72,49 @@ function fmtAgo(iso?: string): string {
   return `${Math.floor(h / 24)}d`;
 }
 
+type KpiData = {
+  total_generated: number;
+  compliance_rate: number | null;
+  approval_rate: number | null;
+  weekly_cost_usd: number;
+  agents_active: number;
+};
+
+function KpiTiles() {
+  const [kpi, setKpi] = useState<KpiData | null>(null);
+  useEffect(() => {
+    async function load() {
+      try {
+        const res = await fetch("/api/kpi", { cache: "no-store" });
+        if (res.ok) setKpi(await res.json());
+      } catch {}
+    }
+    load();
+    const id = setInterval(load, 30000);
+    return () => clearInterval(id);
+  }, []);
+
+  const tiles = [
+    { label: "Total generated", value: kpi?.total_generated ?? "—", accent: "ok" },
+    { label: "Compliance rate", value: kpi?.compliance_rate != null ? `${kpi.compliance_rate}%` : "—", accent: "ok" },
+    { label: "Approval rate",   value: kpi?.approval_rate  != null ? `${kpi.approval_rate}%`  : "—", accent: "vika" },
+    { label: "Weekly cost",     value: kpi?.weekly_cost_usd != null ? `$${kpi.weekly_cost_usd.toFixed(2)}` : "—", accent: "pablo" },
+  ];
+
+  const accentColors: Record<string, string> = { ok: "var(--color-ok)", vika: "var(--color-vika)", pablo: "var(--color-pablo)", sbr: "var(--color-sbr)" };
+
+  return (
+    <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: "1px", background: "var(--color-nicom-border-strong)", borderRadius: "8px", overflow: "hidden", marginBottom: "4px" }}>
+      {tiles.map((t) => (
+        <div key={t.label} style={{ background: "var(--color-nicom-bg)", padding: "20px 22px", borderLeft: `2px solid ${accentColors[t.accent]}` }}>
+          <div className="onyx-eyebrow" style={{ marginBottom: "8px" }}>{t.label}</div>
+          <div style={{ fontFamily: "var(--font-serif)", fontStyle: "italic", fontSize: "36px", color: "var(--color-nicom-text)", lineHeight: 1, letterSpacing: "-1px" }}>{t.value}</div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export default function LiveStatus() {
   const [data, setData] = useState<StatusPayload | null>(null);
   const [err, setErr] = useState<string | null>(null);
@@ -116,6 +159,9 @@ export default function LiveStatus() {
           Nicom AI SMM Factory · LangGraph 6-agent pipeline · 4 brands · 10 SKU
         </p>
       </div>
+
+      {/* KPI tiles */}
+      <KpiTiles />
 
       <div className="grid grid-cols-12 gap-4 onyx-stagger">
         <div className="col-span-12 md:col-span-6">
