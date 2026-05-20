@@ -268,7 +268,7 @@ export default function ContentPlanPage() {
               <h2 style={{ fontFamily: "var(--font-serif)", fontStyle: "italic", fontSize: "20px", color: "var(--color-nicom-text)", letterSpacing: "-0.3px" }}>{selected.title || "(untitled)"}</h2>
               <div className="nicom-mono" style={{ fontSize: "10px", color: "var(--color-nicom-faint)", letterSpacing: "1px", textTransform: "uppercase", marginTop: "4px" }}>{selected.sku} · {selected.channel} · {selected.brand}</div>
             </div>
-            <button className="btn-onyx-ghost" style={{ padding: "6px 10px", fontSize: "14px" }} onClick={() => setSelected(null)}>✕</button>
+            <button className="btn-onyx-ghost" style={{ padding: "6px 12px", fontSize: "16px", lineHeight: 1 }} onClick={() => setSelected(null)}>✕</button>
           </div>
           <div style={{ padding: "20px 24px" }}>
             <dl style={{ display: "flex", flexDirection: "column", gap: "10px", fontSize: "13px" }}>
@@ -341,7 +341,7 @@ export default function ContentPlanPage() {
       {err && <div className="onyx-callout onyx-callout-danger"><strong>Error:</strong> {err}</div>}
 
       {/* Views */}
-      {view === "calendar"  && <ContentPlanCalendar />}
+      {view === "calendar"  && <ContentPlanCalendar externalItems={filtered} />}
       {view === "table"     && <TableView />}
       {view === "kanban"    && <KanbanView />}
       {view === "timeline"  && <TimelineView />}

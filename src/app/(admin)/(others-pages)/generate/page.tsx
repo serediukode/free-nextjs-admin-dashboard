@@ -165,7 +165,7 @@ function GenerateForm() {
   }
 
   return (
-    <div className="onyx-page space-y-6">
+    <div className="onyx-page space-y-6" style={{ maxWidth: "1200px" }}>
       {/* Page header */}
       <div>
         <p className="onyx-eyebrow mb-2">Pipeline · manual trigger</p>
@@ -176,7 +176,7 @@ function GenerateForm() {
       {/* Controls */}
       <div className="onyx-panel">
         <p className="onyx-eyebrow mb-4">Trigger generation</p>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr) auto", gap: "16px", alignItems: "end", maxWidth: "900px" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(3,minmax(0,1fr)) auto", gap: "16px", alignItems: "end" }}>
           <label>
             <div className="onyx-h3 mb-2">SKU</div>
             <select value={sku} onChange={e => setSku(e.target.value)} className="onyx-select">

@@ -38,18 +38,22 @@ function daysInMonth(d: Date) {
   return new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate();
 }
 
-export default function ContentPlanCalendar() {
-  const [items, setItems] = useState<Item[]>([]);
+export default function ContentPlanCalendar({ externalItems }: { externalItems?: Item[] }) {
+  const [items, setItems] = useState<Item[]>(externalItems || []);
   const [err, setErr] = useState<string | null>(null);
   const [cursor, setCursor] = useState(() => startOfMonth(new Date()));
   const [selected, setSelected] = useState<Item | null>(null);
 
   useEffect(() => {
+    if (externalItems !== undefined) {
+      setItems(externalItems);
+      return;
+    }
     fetch("/api/content-plan", { cache: "no-store" })
       .then((r) => r.json())
       .then((j) => setItems(j.items || []))
       .catch((e) => setErr(String(e)));
-  }, []);
+  }, [externalItems]);
 
   const byDate = new Map<string, Item[]>();
   for (const it of items) {

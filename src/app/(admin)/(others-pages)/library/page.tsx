@@ -213,9 +213,9 @@ export default function LibraryPage() {
       {/* Lightbox */}
       {selected && (
         <div className="onyx-modal-backdrop" onClick={() => setSelected(null)}>
-          <div className="onyx-modal" style={{ maxHeight: "90vh", width: "100%", maxWidth: "1100px", overflowY: "auto", padding: "28px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: "24px" }} onClick={e => e.stopPropagation()}>
+          <div className="onyx-modal" style={{ maxHeight: "90vh", width: "min(1100px, 96vw)", overflowY: "auto", padding: "28px", display: "grid", gridTemplateColumns: "minmax(0,1fr) minmax(0,1fr)", gap: "24px", alignItems: "start" }} onClick={e => e.stopPropagation()}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={selected.url} alt={selected.filename} style={{ width: "100%", borderRadius: "8px" }} />
+            <img src={selected.url} alt={selected.filename} style={{ width: "100%", maxHeight: "70vh", objectFit: "contain", borderRadius: "8px" }} />
             <div className="space-y-3" style={{ fontSize: "13px", color: "var(--color-nicom-muted)" }}>
               <h3 style={{ fontFamily: "var(--font-serif)", fontStyle: "italic", fontSize: "18px", color: "var(--color-nicom-text)", marginBottom: "12px" }}>{selected.filename}</h3>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px", fontSize: "11px" }}>

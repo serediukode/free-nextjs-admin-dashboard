@@ -61,13 +61,18 @@ export default function QueuePage() {
 
   return (
     <div className="space-y-4">
+      <div>
+        <p className="onyx-eyebrow mb-2">Content Queue · Notion DB</p>
+        <h1 style={{ fontFamily: "var(--font-serif)", fontStyle: "italic", fontSize: "32px", letterSpacing: "-0.3px", color: "var(--color-nicom-text)", marginBottom: "8px" }}>Content Queue</h1>
+        <p style={{ color: "var(--color-nicom-muted)", fontSize: "13px" }}>Notion Content Plan · filter by status · approve or reject entries</p>
+      </div>
       <div className="onyx-filter-bar">
         <label className="onyx-h3 mb-0 mr-2">Filter:</label>
         <select
           value={filter}
           onChange={(e) => setFilter(e.target.value)}
           className="onyx-select"
-          style={{ width: "auto" }}
+          style={{ width: "auto", cursor: "pointer" }}
         >
           {STATUS_OPTIONS.map((s) => (
             <option key={s} value={s}>
@@ -75,7 +80,7 @@ export default function QueuePage() {
             </option>
           ))}
         </select>
-        <button onClick={load} className="btn-onyx-ghost ml-auto">
+        <button onClick={load} className="btn-onyx-ghost ml-auto" style={{ cursor: "pointer" }}>
           Refresh
         </button>
       </div>

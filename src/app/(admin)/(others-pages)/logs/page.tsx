@@ -47,9 +47,11 @@ export default function LogsPage() {
 
   return (
     <div className="space-y-4">
-      <p className="onyx-eyebrow">
-        Last 30 generation runs from Notion Generation Log DB. Refreshes every 10s.
-      </p>
+      <div>
+        <p className="onyx-eyebrow mb-2">Generation Log · Notion DB</p>
+        <h1 style={{ fontFamily: "var(--font-serif)", fontStyle: "italic", fontSize: "32px", letterSpacing: "-0.3px", color: "var(--color-nicom-text)", marginBottom: "8px" }}>Generation Log</h1>
+        <p style={{ color: "var(--color-nicom-muted)", fontSize: "13px" }}>Last 30 generation runs · Notion Generation Log DB · refresh 10s</p>
+      </div>
       {err && (
         <div className="onyx-callout onyx-callout-danger">
           {err}

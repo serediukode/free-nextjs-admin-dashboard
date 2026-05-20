@@ -1006,7 +1006,7 @@ span.flatpickr-weekday,
     transition: all 0.2s; cursor: pointer;
   }
   .onyx-filter-pill:hover { background: var(--color-nicom-hover); color: var(--color-nicom-text); }
-  .onyx-filter-pill.active { background: var(--color-pablo); color: var(--color-nicom-bg); border-color: var(--color-pablo); font-weight: 600; }
+  .onyx-filter-pill.active { background: var(--color-pablo); color: var(--color-nicom-bg); border-color: var(--color-pablo); font-weight: 600; box-shadow: 0 0 8px rgba(199,154,76,0.3); }
 
   /* ── KPI ── */
   .onyx-kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--color-nicom-border-strong); border-radius: 6px; overflow: hidden; margin-bottom: 28px; }
