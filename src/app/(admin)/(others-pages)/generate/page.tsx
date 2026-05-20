@@ -174,37 +174,39 @@ function GenerateForm() {
       </div>
 
       {/* Controls */}
-      <div className="onyx-panel">
+      <div className="onyx-panel" style={{ overflow: "hidden" }}>
         <p className="onyx-eyebrow mb-4">Trigger generation</p>
-        <div style={{ display: "flex", flexWrap: "wrap", gap: "16px", alignItems: "end" }}>
-          <label style={{ flex: "2 1 200px" }}>
+        {/* Row 1: selects */}
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "12px", marginBottom: "12px" }}>
+          <label>
             <div className="onyx-h3 mb-2">SKU</div>
-            <select value={sku} onChange={e => setSku(e.target.value)} className="onyx-select">
+            <select value={sku} onChange={e => setSku(e.target.value)} className="onyx-select" style={{ width: "100%" }}>
               {SKUS.map(s => <option key={s}>{s}</option>)}
             </select>
           </label>
-          <label style={{ flex: "1 1 130px" }}>
+          <label>
             <div className="onyx-h3 mb-2">Format</div>
-            <select value={format} onChange={e => setFormat(e.target.value)} className="onyx-select">
+            <select value={format} onChange={e => setFormat(e.target.value)} className="onyx-select" style={{ width: "100%" }}>
               {FORMATS.map(f => <option key={f}>{f}</option>)}
             </select>
           </label>
-          <label style={{ flex: "1 1 130px" }}>
+          <label>
             <div className="onyx-h3 mb-2">Approval mode</div>
-            <select value={mode} onChange={e => setMode(e.target.value)} className="onyx-select">
+            <select value={mode} onChange={e => setMode(e.target.value)} className="onyx-select" style={{ width: "100%" }}>
               {MODES.map(m => <option key={m}>{m}</option>)}
             </select>
           </label>
-          <div style={{ display: "flex", gap: "8px", flexShrink: 0 }}>
-            <button disabled={running} onClick={run} className="btn-onyx-primary"
-              style={{ padding: "10px 20px", fontSize: "11px", whiteSpace: "nowrap" }}>
-              {running ? "Running…" : "▶ Run"}
-            </button>
-            <button onClick={clear} className="btn-onyx-ghost"
-              style={{ padding: "10px 14px", fontSize: "11px" }}>
-              ✕
-            </button>
-          </div>
+        </div>
+        {/* Row 2: buttons */}
+        <div style={{ display: "flex", gap: "8px" }}>
+          <button disabled={running} onClick={run} className="btn-onyx-primary"
+            style={{ padding: "10px 24px", fontSize: "11px" }}>
+            {running ? "Running…" : "▶ Run pipeline"}
+          </button>
+          <button onClick={clear} className="btn-onyx-ghost"
+            style={{ padding: "10px 14px", fontSize: "11px" }}>
+            ✕ Clear
+          </button>
         </div>
       </div>
 
