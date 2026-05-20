@@ -21,13 +21,45 @@ type Settings = {
 export default function SettingsPage() {
   const [data, setData] = useState<Settings | null>(null);
   const [err, setErr] = useState<string | null>(null);
+  const [servicesBusy, setServicesBusy] = useState<string | null>(null);
+  const [approvalMode, setApprovalMode] = useState<string>("");
 
   useEffect(() => {
     fetch("/api/settings", { cache: "no-store" })
       .then((r) => r.json())
-      .then(setData)
+      .then((d) => {
+        setData(d);
+        setApprovalMode(d.approval_mode_default);
+      })
       .catch((e) => setErr(String(e)));
   }, []);
+
+  async function controlLaunchd(name: string, action: "start" | "stop" | "restart") {
+    setServicesBusy(`${name}-${action}`);
+    try {
+      const res = await fetch("/api/agents/control", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ service: name, action }),
+      });
+      if (!res.ok) throw new Error(await res.text());
+      // refresh settings
+      const r2 = await fetch("/api/settings", { cache: "no-store" });
+      setData(await r2.json());
+    } catch (e) { setErr(String(e)); }
+    finally { setServicesBusy(null); }
+  }
+
+  async function saveApprovalMode(mode: string) {
+    setApprovalMode(mode);
+    try {
+      await fetch("/api/settings/approval-mode", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ mode }),
+      });
+    } catch {}
+  }
 
   if (err) return <div style={{ color: "var(--color-danger)" }}>Error: {err}</div>;
   if (!data) return <div style={{ color: "var(--color-nicom-faint)" }}>Loading…</div>;
@@ -43,9 +75,20 @@ export default function SettingsPage() {
             <dt style={{ color: "var(--color-nicom-faint)" }}>Root</dt>
             <dd className="nicom-mono" style={{ color: "var(--color-nicom-text)" }}>{data.project_root}</dd>
           </div>
-          <div className="flex justify-between">
-            <dt style={{ color: "var(--color-nicom-faint)" }}>Approval mode default</dt>
-            <dd className="nicom-mono" style={{ color: "var(--color-nicom-text)" }}>{data.approval_mode_default}</dd>
+          <div className="flex items-center justify-between">
+            <dt style={{ color: "var(--color-nicom-faint)" }}>Approval mode</dt>
+            <dd>
+              <select
+                value={approvalMode}
+                onChange={(e) => saveApprovalMode(e.target.value)}
+                className="onyx-select"
+                style={{ width: "140px" }}
+              >
+                {["local", "auto", "platform", "telegram"].map(m => (
+                  <option key={m} value={m}>{m}</option>
+                ))}
+              </select>
+            </dd>
           </div>
           <div className="flex justify-between">
             <dt style={{ color: "var(--color-nicom-faint)" }}>Pletor agents</dt>
@@ -58,13 +101,41 @@ export default function SettingsPage() {
 
       <section className="onyx-panel">
         <p className="onyx-eyebrow mb-4">Launchd services</p>
-        <ul className="space-y-2" style={{ fontSize: "13px" }}>
+        <ul className="space-y-3" style={{ fontSize: "13px" }}>
           {data.launchd.map((l) => (
-            <li key={l.name} className="flex items-center justify-between">
-              <span className="nicom-mono" style={{ color: "var(--color-nicom-text)" }}>{l.name}</span>
-              <span style={{ color: "var(--color-nicom-faint)" }}>
-                {l.loaded ? (l.pid ? `running (pid ${l.pid})` : "loaded") : "not loaded"}
-              </span>
+            <li key={l.name} className="flex items-center justify-between gap-3">
+              <div>
+                <span className="nicom-mono" style={{ color: "var(--color-nicom-text)" }}>{l.name}</span>
+                <div className="nicom-mono text-[10px] mt-0.5" style={{ color: l.loaded && l.pid ? "var(--color-ok)" : "var(--color-nicom-faint)" }}>
+                  {l.loaded ? (l.pid ? `● running · pid ${l.pid}` : "loaded · no pid") : "○ not loaded"}
+                </div>
+              </div>
+              <div style={{ display: "flex", gap: "6px" }}>
+                <button
+                  disabled={!!servicesBusy}
+                  onClick={() => controlLaunchd(l.name, "restart")}
+                  className="btn-onyx-ghost"
+                  style={{ padding: "4px 10px", fontSize: "9px" }}
+                >
+                  {servicesBusy === `${l.name}-restart` ? "…" : "↻"}
+                </button>
+                <button
+                  disabled={!!servicesBusy}
+                  onClick={() => controlLaunchd(l.name, "stop")}
+                  className="btn-onyx-danger"
+                  style={{ padding: "4px 10px", fontSize: "9px" }}
+                >
+                  {servicesBusy === `${l.name}-stop` ? "…" : "Stop"}
+                </button>
+                <button
+                  disabled={!!servicesBusy}
+                  onClick={() => controlLaunchd(l.name, "start")}
+                  className="btn-onyx-success"
+                  style={{ padding: "4px 10px", fontSize: "9px" }}
+                >
+                  {servicesBusy === `${l.name}-start` ? "…" : "Start"}
+                </button>
+              </div>
             </li>
           ))}
         </ul>

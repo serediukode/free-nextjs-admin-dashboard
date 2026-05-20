@@ -55,6 +55,15 @@ const AGENTS: Agent[] = [
   },
 ];
 
+const AGENT_SERVICE: Record<string, string> = {
+  "niko":               "com.nicom.agent-daemon",
+  "research":           "com.nicom.agent-daemon",
+  "compliance":         "com.nicom.agent-daemon",
+  "competitor-monitor": "com.nicom.agent-daemon",
+  "product-agent":      "com.nicom.agent-daemon",
+  "telegram-bot":       "ua.nicom.telegram-bot",
+};
+
 type Heartbeat = { agent_id: string; ts: string; status: string };
 type StatusResponse = {
   services?: { name: string; pid: number | null; alive: boolean }[];
@@ -93,6 +102,7 @@ function deriveStatus(hb: Heartbeat | undefined): { label: string; color: string
 export default function AgentsPage() {
   const [data, setData] = useState<StatusResponse | null>(null);
   const [err, setErr] = useState<string | null>(null);
+  const [busy, setBusy] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -116,6 +126,30 @@ export default function AgentsPage() {
     };
   }, []);
 
+  async function controlService(service: string, action: "start" | "stop" | "restart") {
+    setBusy(`${service}-${action}`);
+    try {
+      const res = await fetch("/api/agents/control", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ service, action }),
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error);
+      // reload status after control
+      setTimeout(() => {
+        fetch("/api/status", { cache: "no-store" })
+          .then(r => r.json())
+          .then(setData)
+          .catch(() => {});
+      }, 1200);
+    } catch (e) {
+      setErr(String(e));
+    } finally {
+      setBusy(null);
+    }
+  }
+
   const heartbeats = data?.queue?.lastHeartbeats || [];
   const hbByAgent: Record<string, Heartbeat> = {};
   for (const hb of heartbeats) hbByAgent[hb.agent_id] = hb;
@@ -124,10 +158,9 @@ export default function AgentsPage() {
     <div className="space-y-6">
       <div className="flex items-baseline justify-between">
         <div>
-          <h1 className="text-xl font-semibold text-[var(--color-nicom-text)]">Agents</h1>
-          <p className="mt-1 text-sm text-[var(--color-nicom-muted)]">
-            6 production agents у LangGraph pipeline. Heartbeats з state DB · refresh кожні 10s.
-          </p>
+          <p className="onyx-eyebrow mb-2">Agents · LangGraph pipeline</p>
+          <h1 style={{ fontFamily: "var(--font-serif)", fontStyle: "italic", fontSize: "32px", letterSpacing: "-0.3px", color: "var(--color-nicom-text)", marginBottom: "8px" }}>AI Agents</h1>
+          <p style={{ color: "var(--color-nicom-muted)", fontSize: "13px" }}>6 production agents · SQLite heartbeats · refresh 10s</p>
         </div>
         <div className="nicom-mono text-xs text-[var(--color-nicom-faint)]">
           {err ? <span className="text-[var(--color-danger)]">offline · {err}</span> : data ? "live" : "loading…"}
@@ -152,6 +185,28 @@ export default function AgentsPage() {
                 </span>
               </div>
               <p className="mt-3 text-sm text-[var(--color-nicom-muted)]">{a.description}</p>
+              <div className="mt-3 flex gap-2">
+                {AGENT_SERVICE[a.id] && (
+                  <>
+                    <button
+                      disabled={!!busy}
+                      onClick={() => controlService(AGENT_SERVICE[a.id], "restart")}
+                      className="btn-onyx-ghost"
+                      style={{ padding: "4px 10px", fontSize: "9px" }}
+                    >
+                      {busy?.startsWith(AGENT_SERVICE[a.id] + "-restart") ? "…" : "↻ Restart"}
+                    </button>
+                    <button
+                      disabled={!!busy}
+                      onClick={() => controlService(AGENT_SERVICE[a.id], "stop")}
+                      className="btn-onyx-danger"
+                      style={{ padding: "4px 10px", fontSize: "9px" }}
+                    >
+                      {busy?.startsWith(AGENT_SERVICE[a.id] + "-stop") ? "…" : "Stop"}
+                    </button>
+                  </>
+                )}
+              </div>
               <div className="mt-3 nicom-mono text-[11px] text-[var(--color-nicom-faint)]">
                 last seen: {status.lastSeen}
               </div>
