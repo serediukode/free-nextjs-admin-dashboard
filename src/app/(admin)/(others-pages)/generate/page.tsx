@@ -51,6 +51,14 @@ function GenerateForm() {
 
   const [mode, setMode] = useState("local");
   const [pletorOk, setPletorOk] = useState<boolean | null>(null); // null = loading
+  const [showModels, setShowModels] = useState(false);
+  const [taskModels, setTaskModels] = useState<Record<string,string>>({});
+  const [availableModels, setAvailableModels] = useState<string[]>([]);
+  const GEN_TASKS = ["prompt_generate", "caption_generate", "brief_generate", "compliance_check"];
+  const TASK_LABELS: Record<string,string> = {
+    prompt_generate: "Image prompt", caption_generate: "Caption",
+    brief_generate: "Brief", compliance_check: "Compliance",
+  };
   const [running, setRunning] = useState(false);
   const [lines, setLines] = useState<string[]>(() => {
     try {
@@ -83,6 +91,22 @@ function GenerateForm() {
       })
       .catch(() => setPletorOk(false));
   }, []);
+
+  useEffect(() => {
+    fetch("/api/models", { cache: "no-store" }).then(r => r.json()).then(d => {
+      setTaskModels(d.config || {});
+      setAvailableModels(d.available || []);
+    }).catch(() => {});
+  }, []);
+
+  async function setTaskModel(task: string, model: string) {
+    setTaskModels(prev => ({ ...prev, [task]: model }));
+    await fetch("/api/models", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ task, model }),
+    }).catch(() => {});
+  }
 
   const isVideoFormat = VIDEO_FORMATS.has(format);
   const pletorWarning = isVideoFormat && pletorOk === false;
@@ -238,6 +262,27 @@ function GenerateForm() {
             style={{ padding: "10px 14px", fontSize: "11px" }}>
             ✕ Clear
           </button>
+        </div>
+
+        <div style={{ marginTop: "16px", borderTop: "0.5px solid var(--color-nicom-border)", paddingTop: "12px" }}>
+          <button onClick={() => setShowModels(v => !v)}
+            style={{ fontFamily: "var(--font-mono)", fontSize: "10px", color: "var(--color-nicom-faint)", letterSpacing: "1px", textTransform: "uppercase", background: "transparent", border: "none", cursor: "pointer", display: "flex", alignItems: "center", gap: "6px" }}>
+            <span style={{ transition: "transform 0.2s", transform: showModels ? "rotate(90deg)" : "rotate(0)" }}>▶</span>
+            Model overrides
+          </button>
+          {showModels && (
+            <div className="grid grid-cols-2 gap-3 mt-3">
+              {GEN_TASKS.map(task => (
+                <label key={task} className="block">
+                  <div className="onyx-h3 mb-1">{TASK_LABELS[task] || task}</div>
+                  <select value={taskModels[task] || ""} onChange={e => setTaskModel(task, e.target.value)}
+                    style={{ width: "100%", padding: "7px 10px", background: "var(--color-nicom-elev)", border: "0.5px solid var(--color-nicom-border)", borderRadius: "4px", color: "var(--color-nicom-text)", fontFamily: "var(--font-mono)", fontSize: "11px" }}>
+                    {availableModels.map(m => <option key={m}>{m}</option>)}
+                  </select>
+                </label>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 
