@@ -5,13 +5,12 @@ import Link from "next/link";
 import React from "react";
 
 const TABS = [
-  { label: "Status",   path: "/" },
-  { label: "Library",  path: "/library" },
-  { label: "Calendar", path: "/calendar" },
-  { label: "Generate", path: "/generate" },
-  { label: "Queue",    path: "/queue" },
-  { label: "Agents",   path: "/agents" },
-  { label: "Logs",     path: "/logs" },
+  { label: "Status",       path: "/" },
+  { label: "Content Plan", path: "/content-plan" },
+  { label: "Generate",     path: "/generate" },
+  { label: "Library",      path: "/library" },
+  { label: "Agents",       path: "/agents" },
+  { label: "Logs",         path: "/logs" },
 ];
 
 const AppHeader: React.FC = () => {
