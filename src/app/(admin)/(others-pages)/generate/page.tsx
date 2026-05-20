@@ -176,24 +176,27 @@ function GenerateForm() {
       {/* Controls */}
       <div className="onyx-panel" style={{ overflow: "hidden" }}>
         <p className="onyx-eyebrow mb-4">Trigger generation</p>
-        {/* Row 1: selects — min-width:0 prevents select's intrinsic content size from blowing the grid */}
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "12px", marginBottom: "12px" }}>
-          {[
-            { label: "SKU", value: sku, onChange: setSku, options: SKUS },
-            { label: "Format", value: format, onChange: setFormat, options: FORMATS },
-            { label: "Approval mode", value: mode, onChange: setMode, options: MODES },
-          ].map(({ label: lbl, value: val, onChange, options }) => (
-            <label key={lbl} style={{ display: "block", minWidth: 0, overflow: "hidden" }}>
-              <div className="onyx-h3 mb-2">{lbl}</div>
-              <select value={val} onChange={e => onChange(e.target.value)}
-                style={{ width: "100%", padding: "9px 12px", background: "var(--color-nicom-elev)", border: "0.5px solid var(--color-nicom-border)", borderRadius: "4px", color: "var(--color-nicom-text)", fontFamily: "var(--font-mono)", fontSize: "12px", boxSizing: "border-box" }}>
-                {options.map(o => <option key={o}>{o}</option>)}
-              </select>
-            </label>
-          ))}
+        <div className="grid grid-cols-3 gap-3 mb-3">
+          <label className="block">
+            <div className="onyx-h3 mb-2">SKU</div>
+            <select value={sku} onChange={e => setSku(e.target.value)} className="onyx-select w-full">
+              {SKUS.map(s => <option key={s}>{s}</option>)}
+            </select>
+          </label>
+          <label className="block">
+            <div className="onyx-h3 mb-2">Format</div>
+            <select value={format} onChange={e => setFormat(e.target.value)} className="onyx-select w-full">
+              {FORMATS.map(f => <option key={f}>{f}</option>)}
+            </select>
+          </label>
+          <label className="block">
+            <div className="onyx-h3 mb-2">Approval mode</div>
+            <select value={mode} onChange={e => setMode(e.target.value)} className="onyx-select w-full">
+              {MODES.map(m => <option key={m}>{m}</option>)}
+            </select>
+          </label>
         </div>
-        {/* Row 2: buttons */}
-        <div style={{ display: "flex", gap: "8px" }}>
+        <div className="flex gap-2">
           <button disabled={running} onClick={run} className="btn-onyx-primary"
             style={{ padding: "10px 24px", fontSize: "11px" }}>
             {running ? "Running…" : "▶ Run pipeline"}
