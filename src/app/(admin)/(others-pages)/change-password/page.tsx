@@ -31,52 +31,62 @@ export default function ChangePasswordPage() {
 
   return (
     <div className="mx-auto max-w-md">
-      <h1 className="mb-4 text-xl font-semibold">Change password</h1>
+      <h1 className="text-xl font-semibold text-[var(--color-nicom-text)] mb-4">Change password</h1>
       <form
         onSubmit={handleSubmit}
-        className="space-y-4 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900"
+        className="nicom-surface space-y-4 p-6"
       >
         <div>
-          <label className="mb-1 block text-sm font-medium">Current password</label>
+          <label className="text-sm font-medium text-[var(--color-nicom-muted)] mb-1 block">
+            Current password
+          </label>
           <input
             type="password"
             required
             value={current}
             onChange={(e) => setCurrent(e.target.value)}
-            className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-800"
+            className="w-full rounded-lg border border-[var(--color-nicom-border)] bg-[var(--color-nicom-elev)] px-3 py-2 text-sm text-[var(--color-nicom-text)]"
           />
         </div>
         <div>
-          <label className="mb-1 block text-sm font-medium">New password (≥8 chars)</label>
+          <label className="text-sm font-medium text-[var(--color-nicom-muted)] mb-1 block">
+            New password (≥8 chars)
+          </label>
           <input
             type="password"
             required
             minLength={8}
             value={next}
             onChange={(e) => setNext(e.target.value)}
-            className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-800"
+            className="w-full rounded-lg border border-[var(--color-nicom-border)] bg-[var(--color-nicom-elev)] px-3 py-2 text-sm text-[var(--color-nicom-text)]"
           />
         </div>
         <div>
-          <label className="mb-1 block text-sm font-medium">Confirm new password</label>
+          <label className="text-sm font-medium text-[var(--color-nicom-muted)] mb-1 block">
+            Confirm new password
+          </label>
           <input
             type="password"
             required
             value={confirm}
             onChange={(e) => setConfirm(e.target.value)}
-            className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-800"
+            className="w-full rounded-lg border border-[var(--color-nicom-border)] bg-[var(--color-nicom-elev)] px-3 py-2 text-sm text-[var(--color-nicom-text)]"
           />
         </div>
-        {err && <div className="rounded bg-rose-100 px-3 py-2 text-sm text-rose-700">{err}</div>}
+        {err && (
+          <div className="rounded bg-[var(--color-danger)]/10 border border-[var(--color-danger)]/30 px-3 py-2 text-sm text-[var(--color-danger)]">
+            {err}
+          </div>
+        )}
         {ok && (
-          <div className="rounded bg-emerald-100 px-3 py-2 text-sm text-emerald-700">
+          <div className="rounded bg-[var(--color-ok)]/10 border border-[var(--color-ok)]/30 px-3 py-2 text-sm text-[var(--color-ok)]">
             Password changed. Signing out…
           </div>
         )}
         <button
           disabled={busy || ok}
           type="submit"
-          className="w-full rounded-lg bg-emerald-500 px-4 py-2 text-sm font-medium text-white disabled:opacity-50"
+          className="w-full rounded-lg bg-[var(--color-accent)] px-4 py-2 text-sm font-medium text-white disabled:opacity-50"
         >
           {busy ? "Updating…" : "Change password"}
         </button>

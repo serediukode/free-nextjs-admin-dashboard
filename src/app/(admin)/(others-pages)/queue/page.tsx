@@ -61,11 +61,11 @@ export default function QueuePage() {
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-3">
-        <label className="text-sm font-medium">Filter by status:</label>
+        <label className="text-sm font-medium text-[var(--color-nicom-muted)]">Filter by status:</label>
         <select
           value={filter}
           onChange={(e) => setFilter(e.target.value)}
-          className="rounded border border-gray-200 bg-white px-3 py-1 text-sm dark:border-gray-700 dark:bg-gray-900"
+          className="rounded border border-[var(--color-nicom-border)] bg-[var(--color-nicom-elev)] px-3 py-1 text-sm text-[var(--color-nicom-text)]"
         >
           {STATUS_OPTIONS.map((s) => (
             <option key={s} value={s}>
@@ -75,42 +75,46 @@ export default function QueuePage() {
         </select>
         <button
           onClick={load}
-          className="rounded bg-gray-100 px-3 py-1 text-sm dark:bg-gray-800"
+          className="nicom-elev px-3 py-1 text-sm text-[var(--color-nicom-muted)] hover:text-[var(--color-nicom-text)] rounded"
         >
           Refresh
         </button>
       </div>
 
-      {err && <div className="rounded bg-rose-100 p-3 text-sm text-rose-700">{err}</div>}
+      {err && (
+        <div className="nicom-elev border-l-4 border-[var(--color-danger)] p-3 text-sm text-[var(--color-danger)]">
+          {err}
+        </div>
+      )}
 
-      <div className="rounded-2xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900">
+      <div className="nicom-surface overflow-hidden">
         <table className="w-full text-sm">
-          <thead className="text-left text-xs uppercase tracking-wide text-gray-500">
+          <thead className="text-left text-[10px] uppercase tracking-wider text-[var(--color-nicom-faint)]">
             <tr>
-              <th className="px-4 py-3">Title</th>
-              <th className="px-4 py-3">SKU</th>
-              <th className="px-4 py-3">Channel</th>
-              <th className="px-4 py-3">Brand</th>
-              <th className="px-4 py-3">Status</th>
-              <th className="px-4 py-3 text-right">Actions</th>
+              <th className="px-4 py-3 font-medium">Title</th>
+              <th className="px-4 py-3 font-medium">SKU</th>
+              <th className="px-4 py-3 font-medium">Channel</th>
+              <th className="px-4 py-3 font-medium">Brand</th>
+              <th className="px-4 py-3 font-medium">Status</th>
+              <th className="px-4 py-3 font-medium text-right">Actions</th>
             </tr>
           </thead>
           <tbody>
             {items.length === 0 && (
               <tr>
-                <td colSpan={6} className="px-4 py-8 text-center text-gray-500">
+                <td colSpan={6} className="px-4 py-8 text-center text-[var(--color-nicom-faint)]">
                   No entries match this filter.
                 </td>
               </tr>
             )}
             {items.map((it) => (
-              <tr key={it.id} className="border-t border-gray-100 dark:border-gray-800">
-                <td className="px-4 py-3">{it.title || "(untitled)"}</td>
-                <td className="px-4 py-3 font-mono text-xs">{it.sku}</td>
-                <td className="px-4 py-3">{it.channel}</td>
-                <td className="px-4 py-3">{it.brand}</td>
+              <tr key={it.id} className="border-t border-[var(--color-nicom-hairline)] hover:bg-[var(--color-nicom-elev)] transition-colors">
+                <td className="px-4 py-3 text-[var(--color-nicom-muted)]">{it.title || "(untitled)"}</td>
+                <td className="px-4 py-3 nicom-mono text-[var(--color-nicom-faint)]">{it.sku}</td>
+                <td className="px-4 py-3 text-[var(--color-nicom-muted)]">{it.channel}</td>
+                <td className="px-4 py-3 text-[var(--color-nicom-muted)]">{it.brand}</td>
                 <td className="px-4 py-3">
-                  <span className="rounded bg-gray-100 px-2 py-0.5 text-xs dark:bg-gray-800">
+                  <span className="nicom-chip">
                     {it.status || "—"}
                   </span>
                 </td>
@@ -130,7 +134,7 @@ export default function QueuePage() {
                           it.sku
                         )}&format=${fmt}`;
                       }}
-                      className="rounded bg-sky-500 px-2 py-1 text-xs text-white disabled:opacity-50"
+                      className="rounded bg-[var(--color-accent)] px-2 py-1 text-xs text-white disabled:opacity-50"
                       title="Trigger generation"
                     >
                       Generate
@@ -138,14 +142,14 @@ export default function QueuePage() {
                     <button
                       disabled={busy === it.id}
                       onClick={() => setStatus(it, "Approved")}
-                      className="rounded bg-emerald-500 px-2 py-1 text-xs text-white disabled:opacity-50"
+                      className="rounded bg-[var(--color-ok)] px-2 py-1 text-xs text-white disabled:opacity-50"
                     >
                       Approve
                     </button>
                     <button
                       disabled={busy === it.id}
                       onClick={() => setStatus(it, "Rejected")}
-                      className="rounded bg-rose-500 px-2 py-1 text-xs text-white disabled:opacity-50"
+                      className="rounded bg-[var(--color-danger)] px-2 py-1 text-xs text-white disabled:opacity-50"
                     >
                       Reject
                     </button>

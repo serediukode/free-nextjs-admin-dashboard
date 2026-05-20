@@ -101,17 +101,15 @@ function GenerateForm() {
 
   return (
     <div className="space-y-4">
-      <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900">
-        <h3 className="mb-4 text-sm font-semibold uppercase tracking-wide text-gray-500">
-          Trigger generation
-        </h3>
+      <div className="nicom-surface p-5">
+        <h3 className="nicom-h4 mb-4">Trigger generation</h3>
         <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
           <label className="text-sm">
-            <div className="mb-1 text-xs uppercase tracking-wide text-gray-500">SKU</div>
+            <div className="mb-1 text-[10px] uppercase tracking-wider text-[var(--color-nicom-faint)]">SKU</div>
             <select
               value={sku}
               onChange={(e) => setSku(e.target.value)}
-              className="w-full rounded border border-gray-200 bg-white px-2 py-1.5 dark:border-gray-700 dark:bg-gray-800"
+              className="w-full rounded border border-[var(--color-nicom-border)] bg-[var(--color-nicom-elev)] px-2 py-1.5 text-sm text-[var(--color-nicom-text)]"
             >
               {SKUS.map((s) => (
                 <option key={s}>{s}</option>
@@ -119,11 +117,11 @@ function GenerateForm() {
             </select>
           </label>
           <label className="text-sm">
-            <div className="mb-1 text-xs uppercase tracking-wide text-gray-500">Format</div>
+            <div className="mb-1 text-[10px] uppercase tracking-wider text-[var(--color-nicom-faint)]">Format</div>
             <select
               value={format}
               onChange={(e) => setFormat(e.target.value)}
-              className="w-full rounded border border-gray-200 bg-white px-2 py-1.5 dark:border-gray-700 dark:bg-gray-800"
+              className="w-full rounded border border-[var(--color-nicom-border)] bg-[var(--color-nicom-elev)] px-2 py-1.5 text-sm text-[var(--color-nicom-text)]"
             >
               {FORMATS.map((f) => (
                 <option key={f}>{f}</option>
@@ -131,11 +129,11 @@ function GenerateForm() {
             </select>
           </label>
           <label className="text-sm">
-            <div className="mb-1 text-xs uppercase tracking-wide text-gray-500">Approval mode</div>
+            <div className="mb-1 text-[10px] uppercase tracking-wider text-[var(--color-nicom-faint)]">Approval mode</div>
             <select
               value={mode}
               onChange={(e) => setMode(e.target.value)}
-              className="w-full rounded border border-gray-200 bg-white px-2 py-1.5 dark:border-gray-700 dark:bg-gray-800"
+              className="w-full rounded border border-[var(--color-nicom-border)] bg-[var(--color-nicom-elev)] px-2 py-1.5 text-sm text-[var(--color-nicom-text)]"
             >
               {MODES.map((m) => (
                 <option key={m}>{m}</option>
@@ -146,7 +144,7 @@ function GenerateForm() {
             <button
               disabled={running}
               onClick={run}
-              className="w-full rounded bg-emerald-500 px-4 py-2 text-sm font-medium text-white disabled:opacity-50"
+              className="w-full rounded bg-[var(--color-accent)] px-4 py-2 text-sm font-medium text-white disabled:opacity-50"
             >
               {running ? "Running…" : "Run pipeline"}
             </button>
@@ -155,9 +153,9 @@ function GenerateForm() {
       </div>
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
-        <div className="rounded-2xl border border-gray-200 bg-black p-4 font-mono text-xs text-emerald-200 shadow-sm lg:col-span-2">
+        <div className="rounded-xl bg-[var(--color-nicom-bg)] border border-[var(--color-nicom-hairline)] p-4 nicom-mono text-[var(--color-ok)] lg:col-span-2">
           {lines.length === 0 ? (
-            <span className="text-gray-500">Output will appear here.</span>
+            <span className="text-[var(--color-nicom-faint)]">Output will appear here.</span>
           ) : (
             lines.map((l, i) => (
               <div key={i} className="whitespace-pre-wrap">
@@ -168,7 +166,7 @@ function GenerateForm() {
           {finishedCode !== null && (
             <div
               className={`mt-2 font-bold ${
-                finishedCode === 0 ? "text-emerald-300" : "text-rose-400"
+                finishedCode === 0 ? "text-[var(--color-ok)]" : "text-[var(--color-danger)]"
               }`}
             >
               [finished] exit code {finishedCode}
@@ -176,20 +174,20 @@ function GenerateForm() {
           )}
         </div>
 
-        <div className="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-800 dark:bg-gray-900">
-          <h3 className="mb-3 text-xs font-semibold uppercase tracking-wide text-gray-500">Result preview</h3>
+        <div className="nicom-surface p-4">
+          <h3 className="nicom-h4 mb-3">Result preview</h3>
           {latest ? (
             <div className="space-y-2">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={latest.url} alt={latest.filename} className="w-full rounded-lg border border-gray-200 dark:border-gray-700" />
-              <div className="truncate text-xs text-gray-500">{latest.filename}</div>
-              <div className="flex items-center justify-between text-[10px] text-gray-400">
+              <img src={latest.url} alt={latest.filename} className="w-full rounded-lg border border-[var(--color-nicom-border)]" />
+              <div className="truncate text-xs text-[var(--color-nicom-faint)]">{latest.filename}</div>
+              <div className="flex items-center justify-between text-[10px] text-[var(--color-nicom-faint)]">
                 <span>{latest.size_kb} KB</span>
-                <a href="/library" className="text-emerald-600 hover:underline">Open Library →</a>
+                <a href="/library" className="text-[var(--color-accent)] hover:underline">Open Library →</a>
               </div>
             </div>
           ) : (
-            <div className="flex h-48 items-center justify-center rounded-lg border border-dashed border-gray-300 text-xs text-gray-500 dark:border-gray-700">
+            <div className="flex h-48 items-center justify-center rounded-lg border border-dashed border-[var(--color-nicom-border)] text-xs text-[var(--color-nicom-faint)]">
               {running ? "Generating…" : "No result yet"}
             </div>
           )}

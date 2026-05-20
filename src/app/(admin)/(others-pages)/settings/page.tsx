@@ -29,41 +29,40 @@ export default function SettingsPage() {
       .catch((e) => setErr(String(e)));
   }, []);
 
-  if (err) return <div className="text-rose-500">Error: {err}</div>;
-  if (!data) return <div>Loading…</div>;
+  if (err) return <div className="text-[var(--color-danger)]">Error: {err}</div>;
+  if (!data) return <div className="text-[var(--color-nicom-faint)]">Loading…</div>;
 
   return (
     <div className="space-y-6">
       <ModelSwitcher />
-      <section className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900">
-        <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-gray-500">Project</h3>
+
+      <section className="nicom-surface p-5">
+        <h3 className="nicom-h4 mb-3">Project</h3>
         <dl className="space-y-2 text-sm">
           <div className="flex justify-between">
-            <dt className="text-gray-500">Root</dt>
-            <dd className="font-mono">{data.project_root}</dd>
+            <dt className="text-[var(--color-nicom-faint)]">Root</dt>
+            <dd className="nicom-mono text-[var(--color-nicom-text)]">{data.project_root}</dd>
           </div>
           <div className="flex justify-between">
-            <dt className="text-gray-500">Approval mode default</dt>
-            <dd className="font-mono">{data.approval_mode_default}</dd>
+            <dt className="text-[var(--color-nicom-faint)]">Approval mode default</dt>
+            <dd className="nicom-mono text-[var(--color-nicom-text)]">{data.approval_mode_default}</dd>
           </div>
           <div className="flex justify-between">
-            <dt className="text-gray-500">Pletor agents</dt>
-            <dd className="font-mono">
+            <dt className="text-[var(--color-nicom-faint)]">Pletor agents</dt>
+            <dd className="nicom-mono text-[var(--color-nicom-text)]">
               {data.pletor_agents === null ? "n/a" : `${data.pletor_agents}/6`}
             </dd>
           </div>
         </dl>
       </section>
 
-      <section className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900">
-        <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-gray-500">
-          Launchd services
-        </h3>
+      <section className="nicom-surface p-5">
+        <h3 className="nicom-h4 mb-3">Launchd services</h3>
         <ul className="space-y-2 text-sm">
           {data.launchd.map((l) => (
             <li key={l.name} className="flex items-center justify-between">
-              <span className="font-mono">{l.name}</span>
-              <span className="text-gray-500">
+              <span className="nicom-mono text-[var(--color-nicom-text)]">{l.name}</span>
+              <span className="text-[var(--color-nicom-faint)]">
                 {l.loaded ? (l.pid ? `running (pid ${l.pid})` : "loaded") : "not loaded"}
               </span>
             </li>
@@ -71,26 +70,24 @@ export default function SettingsPage() {
         </ul>
       </section>
 
-      <section className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900">
-        <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-gray-500">
-          Environment keys
-        </h3>
+      <section className="nicom-surface p-5">
+        <h3 className="nicom-h4 mb-3">Environment keys</h3>
         <table className="w-full text-sm">
-          <thead className="text-left text-xs uppercase tracking-wide text-gray-500">
+          <thead className="text-left text-[10px] uppercase tracking-wider text-[var(--color-nicom-faint)]">
             <tr>
-              <th className="pb-2">Key</th>
-              <th className="pb-2">Project .env</th>
-              <th className="pb-2">Daemon .env</th>
-              <th className="pb-2 text-right">Masked</th>
+              <th className="pb-2 font-medium">Key</th>
+              <th className="pb-2 font-medium">Project .env</th>
+              <th className="pb-2 font-medium">Daemon .env</th>
+              <th className="pb-2 font-medium text-right">Masked</th>
             </tr>
           </thead>
           <tbody>
             {data.env.map((e) => (
-              <tr key={e.key} className="border-t border-gray-100 dark:border-gray-800">
-                <td className="py-2 font-mono">{e.key}</td>
-                <td className="py-2">{e.set_in_project ? "✓" : "—"}</td>
-                <td className="py-2">{e.set_in_daemon ? "✓" : "—"}</td>
-                <td className="py-2 text-right font-mono text-xs">{e.masked || "—"}</td>
+              <tr key={e.key} className="border-t border-[var(--color-nicom-hairline)]">
+                <td className="py-2 nicom-mono text-[var(--color-nicom-text)]">{e.key}</td>
+                <td className="py-2 text-[var(--color-nicom-muted)]">{e.set_in_project ? "✓" : "—"}</td>
+                <td className="py-2 text-[var(--color-nicom-muted)]">{e.set_in_daemon ? "✓" : "—"}</td>
+                <td className="py-2 text-right nicom-mono text-xs text-[var(--color-nicom-faint)]">{e.masked || "—"}</td>
               </tr>
             ))}
           </tbody>

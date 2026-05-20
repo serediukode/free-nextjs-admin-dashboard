@@ -41,28 +41,32 @@ export default function LogsPage() {
 
   return (
     <div className="space-y-4">
-      <p className="text-sm text-gray-500">
+      <p className="text-sm text-[var(--color-nicom-faint)]">
         Last 30 generation runs from Notion Generation Log DB. Refreshes every 10s.
       </p>
-      {err && <div className="rounded bg-rose-100 p-3 text-sm text-rose-700">{err}</div>}
-      <div className="rounded-2xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900">
+      {err && (
+        <div className="nicom-elev border-l-4 border-[var(--color-danger)] p-3 text-sm text-[var(--color-danger)]">
+          {err}
+        </div>
+      )}
+      <div className="nicom-surface overflow-hidden">
         <table className="w-full text-sm">
-          <thead className="text-left text-xs uppercase tracking-wide text-gray-500">
+          <thead className="text-left text-[10px] uppercase tracking-wider text-[var(--color-nicom-faint)]">
             <tr>
-              <th className="px-4 py-3">Created</th>
-              <th className="px-4 py-3">SKU</th>
-              <th className="px-4 py-3">Format</th>
-              <th className="px-4 py-3">Model</th>
-              <th className="px-4 py-3 text-right">Cost</th>
-              <th className="px-4 py-3">Compliance</th>
-              <th className="px-4 py-3">Approved</th>
-              <th className="px-4 py-3">Output</th>
+              <th className="px-4 py-3 font-medium">Created</th>
+              <th className="px-4 py-3 font-medium">SKU</th>
+              <th className="px-4 py-3 font-medium">Format</th>
+              <th className="px-4 py-3 font-medium">Model</th>
+              <th className="px-4 py-3 font-medium text-right">Cost</th>
+              <th className="px-4 py-3 font-medium">Compliance</th>
+              <th className="px-4 py-3 font-medium">Approved</th>
+              <th className="px-4 py-3 font-medium">Output</th>
             </tr>
           </thead>
           <tbody>
             {items.length === 0 && (
               <tr>
-                <td colSpan={8} className="px-4 py-8 text-center text-gray-500">
+                <td colSpan={8} className="px-4 py-8 text-center text-[var(--color-nicom-faint)]">
                   No log entries.
                 </td>
               </tr>
@@ -71,32 +75,30 @@ export default function LogsPage() {
               <tr
                 key={it.id}
                 onClick={() => setSelected(it)}
-                className="cursor-pointer border-t border-gray-100 hover:bg-gray-50 dark:border-gray-800 dark:hover:bg-gray-800/50"
+                className="border-t border-[var(--color-nicom-hairline)] cursor-pointer hover:bg-[var(--color-nicom-elev)] transition-colors"
               >
-                <td className="px-4 py-3 text-xs text-gray-500">
+                <td className="px-4 py-3 nicom-mono text-[var(--color-nicom-faint)]">
                   {new Date(it.created).toLocaleString()}
                 </td>
-                <td className="px-4 py-3 font-mono text-xs">{it.sku}</td>
-                <td className="px-4 py-3 font-mono text-xs">{it.format}</td>
-                <td className="px-4 py-3 text-xs">{it.model}</td>
-                <td className="px-4 py-3 text-right font-mono text-xs">
+                <td className="px-4 py-3 nicom-mono text-[var(--color-nicom-faint)]">{it.sku}</td>
+                <td className="px-4 py-3 nicom-mono text-[var(--color-nicom-faint)]">{it.format}</td>
+                <td className="px-4 py-3 nicom-mono text-[var(--color-nicom-faint)]">{it.model}</td>
+                <td className="px-4 py-3 text-right nicom-mono text-[var(--color-nicom-text)]">
                   {it.cost_usd !== null ? `$${it.cost_usd.toFixed(4)}` : "—"}
                 </td>
                 <td className="px-4 py-3">
                   <span
-                    className={`rounded px-2 py-0.5 text-xs ${
-                      it.compliance_pass
-                        ? "bg-emerald-100 text-emerald-700"
-                        : "bg-rose-100 text-rose-700"
-                    }`}
+                    className={it.compliance_pass ? "nicom-chip nicom-chip-ok" : "nicom-chip nicom-chip-danger"}
                   >
                     {it.compliance_pass ? "PASS" : "FAIL"}
                   </span>
                 </td>
-                <td className="px-4 py-3 text-xs">{it.human_approved ? "✓" : "—"}</td>
+                <td className="px-4 py-3 text-xs text-[var(--color-ok)]">
+                  {it.human_approved ? "✓" : "—"}
+                </td>
                 <td className="px-4 py-3 text-xs">
                   {it.output_url ? (
-                    <a href={it.output_url} target="_blank" className="text-sky-600 underline">
+                    <a href={it.output_url} target="_blank" className="text-[var(--color-accent)] underline">
                       view
                     </a>
                   ) : (
@@ -111,31 +113,32 @@ export default function LogsPage() {
 
       {selected && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4"
           onClick={() => setSelected(null)}
         >
           <div
-            className="max-h-[90vh] w-full max-w-3xl overflow-auto rounded-2xl bg-white p-6 shadow-2xl dark:bg-gray-900"
+            className="nicom-surface max-h-[90vh] w-full max-w-3xl overflow-auto p-6"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="mb-4 flex items-start justify-between gap-3">
               <div>
-                <h2 className="text-lg font-semibold">{selected.title || "(untitled)"}</h2>
-                <div className="mt-1 text-xs text-gray-500">
-                  <span className="font-mono">{selected.sku}</span> · {selected.format} ·{" "}
-                  {selected.model}
+                <h2 className="text-lg font-semibold text-[var(--color-nicom-text)]">
+                  {selected.title || "(untitled)"}
+                </h2>
+                <div className="nicom-mono text-[var(--color-nicom-faint)] mt-1">
+                  {selected.sku} · {selected.format} · {selected.model}
                 </div>
               </div>
               <button
                 onClick={() => setSelected(null)}
-                className="rounded bg-gray-100 px-2 py-1 text-sm dark:bg-gray-800"
+                className="nicom-elev px-2 py-1 text-sm text-[var(--color-nicom-muted)]"
               >
                 ×
               </button>
             </div>
 
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              <div className="rounded-lg bg-gray-50 p-3 dark:bg-gray-800">
+              <div className="bg-[var(--color-nicom-elev)] rounded-lg p-3">
                 {selected.output_url ? (
                   <a href={selected.output_url} target="_blank" rel="noreferrer">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -146,44 +149,42 @@ export default function LogsPage() {
                     />
                   </a>
                 ) : (
-                  <div className="flex h-72 items-center justify-center text-sm text-gray-500">
+                  <div className="flex h-72 items-center justify-center text-sm text-[var(--color-nicom-faint)]">
                     No output_url
                   </div>
                 )}
               </div>
               <dl className="space-y-2 text-sm">
-                <div className="flex justify-between border-b border-gray-100 pb-2 dark:border-gray-800">
-                  <dt className="text-gray-500">Compliance</dt>
+                <div className="flex justify-between border-b border-[var(--color-nicom-hairline)] pb-2">
+                  <dt className="text-[var(--color-nicom-faint)]">Compliance</dt>
                   <dd>
                     <span
-                      className={`rounded px-2 py-0.5 text-xs ${
-                        selected.compliance_pass
-                          ? "bg-emerald-100 text-emerald-700"
-                          : "bg-rose-100 text-rose-700"
-                      }`}
+                      className={selected.compliance_pass ? "nicom-chip nicom-chip-ok" : "nicom-chip nicom-chip-danger"}
                     >
                       {selected.compliance_pass ? "PASS" : "FAIL"}
                     </span>
                   </dd>
                 </div>
-                <div className="flex justify-between border-b border-gray-100 pb-2 dark:border-gray-800">
-                  <dt className="text-gray-500">Human approved</dt>
-                  <dd>{selected.human_approved ? "✓" : "—"}</dd>
+                <div className="flex justify-between border-b border-[var(--color-nicom-hairline)] pb-2">
+                  <dt className="text-[var(--color-nicom-faint)]">Human approved</dt>
+                  <dd className="text-[var(--color-nicom-text)]">{selected.human_approved ? "✓" : "—"}</dd>
                 </div>
-                <div className="flex justify-between border-b border-gray-100 pb-2 dark:border-gray-800">
-                  <dt className="text-gray-500">Cost</dt>
-                  <dd className="font-mono">
+                <div className="flex justify-between border-b border-[var(--color-nicom-hairline)] pb-2">
+                  <dt className="text-[var(--color-nicom-faint)]">Cost</dt>
+                  <dd className="nicom-mono text-[var(--color-nicom-text)]">
                     {selected.cost_usd !== null ? `$${selected.cost_usd.toFixed(4)}` : "—"}
                   </dd>
                 </div>
-                <div className="flex justify-between border-b border-gray-100 pb-2 dark:border-gray-800">
-                  <dt className="text-gray-500">Created</dt>
-                  <dd className="text-xs">{new Date(selected.created).toLocaleString()}</dd>
+                <div className="flex justify-between border-b border-[var(--color-nicom-hairline)] pb-2">
+                  <dt className="text-[var(--color-nicom-faint)]">Created</dt>
+                  <dd className="text-[var(--color-nicom-text)] text-xs">
+                    {new Date(selected.created).toLocaleString()}
+                  </dd>
                 </div>
                 {selected.notes && (
                   <div>
-                    <dt className="text-gray-500">Notes</dt>
-                    <dd className="mt-1 rounded bg-gray-50 p-2 font-mono text-xs whitespace-pre-wrap dark:bg-gray-800">
+                    <dt className="text-[var(--color-nicom-faint)]">Notes</dt>
+                    <dd className="nicom-elev nicom-mono p-2 mt-1 whitespace-pre-wrap text-xs">
                       {selected.notes}
                     </dd>
                   </div>
@@ -196,13 +197,13 @@ export default function LogsPage() {
                 href={`/generate?sku=${encodeURIComponent(selected.sku)}&format=${selected.format
                   .toLowerCase()
                   .replace(/\s+/g, "_")}`}
-                className="rounded bg-sky-500 px-3 py-1.5 text-sm font-medium text-white"
+                className="rounded bg-[var(--color-accent)] px-3 py-1.5 text-sm font-medium text-white"
               >
                 Re-run
               </a>
               <button
                 onClick={() => setSelected(null)}
-                className="rounded bg-gray-100 px-3 py-1.5 text-sm dark:bg-gray-800"
+                className="nicom-elev px-3 py-1.5 text-sm text-[var(--color-nicom-muted)]"
               >
                 Close
               </button>
