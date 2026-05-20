@@ -18,15 +18,12 @@ export default function UserDropdown() {
   }, []);
 
   if (status === "loading") {
-    return <div className="text-xs text-gray-400">…</div>;
+    return <div className="nicom-mono text-[9px]" style={{ color: "var(--color-nicom-faint)" }}>…</div>;
   }
 
   if (!session?.user) {
     return (
-      <Link
-        href="/signin"
-        className="rounded bg-emerald-500 px-3 py-1.5 text-sm font-medium text-white"
-      >
+      <Link href="/signin" className="btn-onyx-primary" style={{ fontSize: "10px", padding: "7px 14px" }}>
         Sign in
       </Link>
     );
@@ -44,29 +41,80 @@ export default function UserDropdown() {
     <div className="relative" ref={ref}>
       <button
         onClick={() => setOpen((v) => !v)}
-        className="flex items-center gap-2 rounded-lg px-2 py-1 hover:bg-gray-100 dark:hover:bg-gray-800"
+        className="flex items-center gap-2 rounded-lg px-2 py-1 transition-colors"
+        style={{ background: "transparent" }}
+        onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.background = "var(--color-nicom-elev)")}
+        onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.background = "transparent")}
       >
-        <span className="flex h-9 w-9 items-center justify-center rounded-full bg-emerald-500 text-sm font-semibold text-white">
+        <span
+          className="flex h-8 w-8 items-center justify-center rounded-lg text-xs font-bold"
+          style={{
+            background: "linear-gradient(135deg, var(--color-pablo) 0%, var(--color-pablo-wine) 100%)",
+            color: "var(--color-nicom-bg)",
+          }}
+        >
           {initials}
         </span>
-        <span className="hidden text-sm font-medium text-gray-700 dark:text-gray-200 md:block">
+        <span className="hidden text-xs font-medium md:block nicom-mono" style={{ color: "var(--color-nicom-muted)", letterSpacing: "0.5px" }}>
           {session.user.name || session.user.email}
         </span>
       </button>
+
       {open && (
-        <div className="absolute right-0 mt-2 w-64 rounded-xl border border-gray-200 bg-white p-3 shadow-lg dark:border-gray-700 dark:bg-gray-900">
-          <div className="border-b border-gray-100 pb-3 dark:border-gray-800">
-            <div className="text-sm font-medium text-gray-800 dark:text-gray-100">
-              {session.user.name || "Account"}
-            </div>
-            <div className="mt-0.5 text-xs text-gray-500">{session.user.email}</div>
+        <div
+          className="absolute right-0 mt-2 w-52 overflow-hidden"
+          style={{
+            background: "var(--color-nicom-surface)",
+            border: "0.5px solid var(--color-nicom-border-strong)",
+            borderRadius: "8px",
+            boxShadow: "0 12px 40px rgba(0,0,0,0.5)",
+            animation: "onyx-enter 0.2s cubic-bezier(0.2,0.9,0.3,1) both",
+            zIndex: 999999,
+          }}
+        >
+          <div className="px-4 py-3" style={{ borderBottom: "0.5px solid var(--color-nicom-border)" }}>
+            <div className="nicom-mono text-[9px] uppercase tracking-widest mb-1" style={{ color: "var(--color-nicom-faint)" }}>Account</div>
+            <div className="text-sm font-medium" style={{ color: "var(--color-nicom-text)" }}>{session.user.name || "User"}</div>
+            <div className="nicom-mono text-[10px]" style={{ color: "var(--color-nicom-faint)" }}>{session.user.email}</div>
           </div>
-          <button
-            onClick={() => signOut({ callbackUrl: "/signin" })}
-            className="mt-3 w-full rounded-lg bg-gray-100 px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700"
-          >
-            Sign out
-          </button>
+
+          <div className="py-1">
+            {[
+              { label: "Settings",        path: "/settings" },
+              { label: "Change Password", path: "/change-password" },
+            ].map((item) => (
+              <Link
+                key={item.path}
+                href={item.path}
+                onClick={() => setOpen(false)}
+                className="flex items-center gap-2 px-4 py-2.5 nicom-mono text-[10px] uppercase tracking-wider transition-colors"
+                style={{ color: "var(--color-nicom-muted)" }}
+                onMouseEnter={(e) => {
+                  (e.currentTarget as HTMLElement).style.background = "var(--color-nicom-elev)";
+                  (e.currentTarget as HTMLElement).style.color = "var(--color-nicom-text)";
+                }}
+                onMouseLeave={(e) => {
+                  (e.currentTarget as HTMLElement).style.background = "transparent";
+                  (e.currentTarget as HTMLElement).style.color = "var(--color-nicom-muted)";
+                }}
+              >
+                <span style={{ color: "var(--color-pablo)", fontSize: "9px" }}>◇</span>
+                {item.label}
+              </Link>
+            ))}
+          </div>
+
+          <div className="p-2" style={{ borderTop: "0.5px solid var(--color-nicom-border)" }}>
+            <button
+              onClick={() => signOut({ callbackUrl: "/signin" })}
+              className="w-full rounded px-3 py-2 text-left nicom-mono text-[10px] uppercase tracking-wider transition-colors"
+              style={{ color: "var(--color-danger)", border: "0.5px solid rgba(217,112,112,0.3)", background: "transparent" }}
+              onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.background = "rgba(217,112,112,0.06)")}
+              onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.background = "transparent")}
+            >
+              Sign out
+            </button>
+          </div>
         </div>
       )}
     </div>

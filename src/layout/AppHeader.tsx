@@ -5,6 +5,7 @@ import Link from "next/link";
 import React from "react";
 
 const TABS = [
+  { label: "Status",   path: "/" },
   { label: "Library",  path: "/library" },
   { label: "Calendar", path: "/calendar" },
   { label: "Generate", path: "/generate" },
