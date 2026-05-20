@@ -44,9 +44,9 @@ function GenerateForm() {
     (async () => {
       // Give filesystem a moment to flush
       await new Promise((r) => setTimeout(r, 500));
-      const params = new URLSearchParams({ sku, format, limit: "1" });
+      const p = new URLSearchParams({ sku, format, limit: "1" });
       try {
-        const res = await fetch(`/api/library?${params}`, { cache: "no-store" });
+        const res = await fetch(`/api/library?${p}`, { cache: "no-store" });
         const json = await res.json();
         if (cancelled) return;
         const top = json.items?.[0];
@@ -101,39 +101,39 @@ function GenerateForm() {
 
   return (
     <div className="space-y-4">
-      <div className="nicom-surface p-5">
-        <h3 className="nicom-h4 mb-4">Trigger generation</h3>
+      <div className="onyx-panel">
+        <p className="onyx-eyebrow mb-4">Trigger generation</p>
         <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
-          <label className="text-sm">
-            <div className="mb-1 text-[10px] uppercase tracking-wider text-[var(--color-nicom-faint)]">SKU</div>
+          <label>
+            <div className="onyx-h3 mb-2">SKU</div>
             <select
               value={sku}
               onChange={(e) => setSku(e.target.value)}
-              className="w-full rounded border border-[var(--color-nicom-border)] bg-[var(--color-nicom-elev)] px-2 py-1.5 text-sm text-[var(--color-nicom-text)]"
+              className="onyx-select"
             >
               {SKUS.map((s) => (
                 <option key={s}>{s}</option>
               ))}
             </select>
           </label>
-          <label className="text-sm">
-            <div className="mb-1 text-[10px] uppercase tracking-wider text-[var(--color-nicom-faint)]">Format</div>
+          <label>
+            <div className="onyx-h3 mb-2">Format</div>
             <select
               value={format}
               onChange={(e) => setFormat(e.target.value)}
-              className="w-full rounded border border-[var(--color-nicom-border)] bg-[var(--color-nicom-elev)] px-2 py-1.5 text-sm text-[var(--color-nicom-text)]"
+              className="onyx-select"
             >
               {FORMATS.map((f) => (
                 <option key={f}>{f}</option>
               ))}
             </select>
           </label>
-          <label className="text-sm">
-            <div className="mb-1 text-[10px] uppercase tracking-wider text-[var(--color-nicom-faint)]">Approval mode</div>
+          <label>
+            <div className="onyx-h3 mb-2">Approval mode</div>
             <select
               value={mode}
               onChange={(e) => setMode(e.target.value)}
-              className="w-full rounded border border-[var(--color-nicom-border)] bg-[var(--color-nicom-elev)] px-2 py-1.5 text-sm text-[var(--color-nicom-text)]"
+              className="onyx-select"
             >
               {MODES.map((m) => (
                 <option key={m}>{m}</option>
@@ -144,7 +144,8 @@ function GenerateForm() {
             <button
               disabled={running}
               onClick={run}
-              className="w-full rounded bg-[var(--color-accent)] px-4 py-2 text-sm font-medium text-white disabled:opacity-50"
+              className="btn-onyx-primary"
+              style={{ width: "100%", justifyContent: "center", padding: "10px 16px", fontSize: "11px" }}
             >
               {running ? "Running…" : "Run pipeline"}
             </button>
@@ -153,9 +154,19 @@ function GenerateForm() {
       </div>
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
-        <div className="rounded-xl bg-[var(--color-nicom-bg)] border border-[var(--color-nicom-hairline)] p-4 nicom-mono text-[var(--color-ok)] lg:col-span-2">
+        <div
+          className="nicom-mono lg:col-span-2"
+          style={{
+            borderRadius: "14px",
+            background: "var(--color-nicom-bg)",
+            border: "0.5px solid var(--color-nicom-border)",
+            padding: "16px",
+            color: "var(--color-ok)",
+            minHeight: "200px",
+          }}
+        >
           {lines.length === 0 ? (
-            <span className="text-[var(--color-nicom-faint)]">Output will appear here.</span>
+            <span style={{ color: "var(--color-nicom-faint)" }}>Output will appear here.</span>
           ) : (
             lines.map((l, i) => (
               <div key={i} className="whitespace-pre-wrap">
@@ -165,29 +176,46 @@ function GenerateForm() {
           )}
           {finishedCode !== null && (
             <div
-              className={`mt-2 font-bold ${
-                finishedCode === 0 ? "text-[var(--color-ok)]" : "text-[var(--color-danger)]"
-              }`}
+              style={{
+                marginTop: "8px",
+                fontWeight: 700,
+                color: finishedCode === 0 ? "var(--color-ok)" : "var(--color-danger)",
+              }}
             >
               [finished] exit code {finishedCode}
             </div>
           )}
         </div>
 
-        <div className="nicom-surface p-4">
-          <h3 className="nicom-h4 mb-3">Result preview</h3>
+        <div className="onyx-panel">
+          <p className="onyx-eyebrow mb-3">Result preview</p>
           {latest ? (
             <div className="space-y-2">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={latest.url} alt={latest.filename} className="w-full rounded-lg border border-[var(--color-nicom-border)]" />
-              <div className="truncate text-xs text-[var(--color-nicom-faint)]">{latest.filename}</div>
-              <div className="flex items-center justify-between text-[10px] text-[var(--color-nicom-faint)]">
+              <img
+                src={latest.url}
+                alt={latest.filename}
+                style={{ width: "100%", borderRadius: "8px", border: "0.5px solid var(--color-nicom-border)" }}
+              />
+              <div style={{ fontSize: "11px", color: "var(--color-nicom-faint)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{latest.filename}</div>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", fontSize: "10px", color: "var(--color-nicom-faint)" }}>
                 <span>{latest.size_kb} KB</span>
-                <a href="/library" className="text-[var(--color-accent)] hover:underline">Open Library →</a>
+                <a href="/library" style={{ color: "var(--color-pablo)" }}>Open Library →</a>
               </div>
             </div>
           ) : (
-            <div className="flex h-48 items-center justify-center rounded-lg border border-dashed border-[var(--color-nicom-border)] text-xs text-[var(--color-nicom-faint)]">
+            <div
+              style={{
+                display: "flex",
+                height: "192px",
+                alignItems: "center",
+                justifyContent: "center",
+                borderRadius: "8px",
+                border: "0.5px dashed var(--color-nicom-border)",
+                fontSize: "11px",
+                color: "var(--color-nicom-faint)",
+              }}
+            >
               {running ? "Generating…" : "No result yet"}
             </div>
           )}

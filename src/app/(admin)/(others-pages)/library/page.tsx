@@ -51,39 +51,36 @@ export default function LibraryPage() {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <p className="text-sm text-[var(--color-nicom-faint)]">
-          {items.length} of {total} generations (auto-refresh 15s). Source: <code className="nicom-mono">test-output/</code> + <code className="nicom-mono">output/</code>.
+      <div className="onyx-filter-bar">
+        <p className="onyx-eyebrow mb-0 mr-auto" style={{ marginBottom: 0 }}>
+          {items.length} of {total} generations · auto-refresh 15s
         </p>
-        <div className="flex items-center gap-2">
-          <input
-            placeholder="filter sku (e.g. vika-deep-blue)"
-            value={sku}
-            onChange={(e) => setSku(e.target.value)}
-            className="rounded border border-[var(--color-nicom-border)] bg-[var(--color-nicom-elev)] px-3 py-1 text-xs text-[var(--color-nicom-text)] placeholder:text-[var(--color-nicom-faint)]"
-          />
-          <select
-            value={format}
-            onChange={(e) => setFormat(e.target.value)}
-            className="rounded border border-[var(--color-nicom-border)] bg-[var(--color-nicom-elev)] px-3 py-1 text-xs text-[var(--color-nicom-text)] placeholder:text-[var(--color-nicom-faint)]"
-          >
-            {FORMATS.map((f) => (
-              <option key={f} value={f}>
-                {f || "all formats"}
-              </option>
-            ))}
-          </select>
-          <button
-            onClick={load}
-            className="rounded bg-[var(--color-nicom-elev)] border border-[var(--color-nicom-border)] px-3 py-1 text-xs text-[var(--color-nicom-muted)]"
-          >
-            Refresh
-          </button>
-        </div>
+        <input
+          placeholder="filter sku…"
+          value={sku}
+          onChange={(e) => setSku(e.target.value)}
+          className="onyx-input"
+          style={{ width: "200px" }}
+        />
+        <select
+          value={format}
+          onChange={(e) => setFormat(e.target.value)}
+          className="onyx-select"
+          style={{ width: "160px" }}
+        >
+          {FORMATS.map((f) => (
+            <option key={f} value={f}>
+              {f || "all formats"}
+            </option>
+          ))}
+        </select>
+        <button onClick={load} className="btn-onyx-ghost">
+          Refresh
+        </button>
       </div>
 
       {err && (
-        <div className="nicom-elev border-l-4 border-[var(--color-danger)] p-3 text-sm text-[var(--color-danger)]">
+        <div className="onyx-callout onyx-callout-danger">
           {err}
         </div>
       )}
@@ -93,31 +90,55 @@ export default function LibraryPage() {
           <button
             key={`${it.source}/${it.filename}`}
             onClick={() => setSelected(it)}
-            className="group relative overflow-hidden rounded-xl border border-[var(--color-nicom-border)] bg-[var(--color-nicom-surface)] text-left transition hover:border-[var(--color-nicom-border)] hover:bg-[var(--color-nicom-elev)]"
+            style={{
+              overflow: "hidden",
+              borderRadius: "14px",
+              border: "0.5px solid var(--color-nicom-border)",
+              background: "var(--color-nicom-surface)",
+              textAlign: "left",
+              transition: "border-color 0.2s, background 0.2s",
+              cursor: "pointer",
+            }}
+            onMouseEnter={(e) => {
+              (e.currentTarget as HTMLButtonElement).style.background = "var(--color-nicom-elev)";
+            }}
+            onMouseLeave={(e) => {
+              (e.currentTarget as HTMLButtonElement).style.background = "var(--color-nicom-surface)";
+            }}
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={it.url}
               alt={it.filename}
-              className="aspect-square w-full object-cover"
+              style={{ aspectRatio: "1", width: "100%", objectFit: "cover" }}
               loading="lazy"
             />
-            <div className="p-3">
-              <div className="truncate text-xs font-semibold text-[var(--color-nicom-text)]">
+            <div style={{ padding: "12px" }}>
+              <div style={{ fontSize: "11px", fontWeight: 600, color: "var(--color-nicom-text)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                 {it.sku || it.filename}
               </div>
-              <div className="mt-1 flex items-center justify-between text-[10px] text-[var(--color-nicom-faint)]">
+              <div style={{ marginTop: "4px", display: "flex", alignItems: "center", justifyContent: "space-between", fontSize: "10px", color: "var(--color-nicom-faint)" }}>
                 <span>{it.format || "—"}</span>
                 <span>{it.size_kb} KB</span>
               </div>
-              <div className="mt-1 text-[10px] text-[var(--color-nicom-faint)]">
+              <div style={{ marginTop: "4px", fontSize: "10px", color: "var(--color-nicom-faint)" }}>
                 {new Date(it.modified_at).toLocaleString()}
               </div>
             </div>
           </button>
         ))}
         {!items.length && !err && (
-          <div className="col-span-full rounded-xl border border-dashed border-[var(--color-nicom-border)] p-12 text-center text-sm text-[var(--color-nicom-faint)]">
+          <div
+            style={{
+              gridColumn: "1 / -1",
+              borderRadius: "14px",
+              border: "0.5px dashed var(--color-nicom-border)",
+              padding: "48px",
+              textAlign: "center",
+              fontSize: "13px",
+              color: "var(--color-nicom-faint)",
+            }}
+          >
             No generations yet. Run <code className="nicom-mono">scripts/run_pipeline.py</code> or use Generate page.
           </div>
         )}
@@ -126,42 +147,52 @@ export default function LibraryPage() {
       {/* Lightbox modal */}
       {selected && (
         <div
+          className="onyx-modal-backdrop"
           onClick={() => setSelected(null)}
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-6"
         >
           <div
+            className="onyx-modal"
+            style={{
+              maxHeight: "90vh",
+              width: "100%",
+              maxWidth: "1100px",
+              overflowY: "auto",
+              padding: "28px",
+              display: "grid",
+              gridTemplateColumns: "1fr 1fr",
+              gap: "24px",
+            }}
             onClick={(e) => e.stopPropagation()}
-            className="grid max-h-[90vh] w-full max-w-6xl grid-cols-1 gap-4 overflow-y-auto rounded-xl border border-[var(--color-nicom-border)] bg-[var(--color-nicom-bg)] p-6 md:grid-cols-2"
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={selected.url} alt={selected.filename} className="w-full rounded-lg" />
-            <div className="space-y-3 text-sm text-[var(--color-nicom-muted)]">
-              <h3 className="text-base font-semibold text-[var(--color-nicom-text)]">{selected.filename}</h3>
-              <div className="grid grid-cols-2 gap-2 text-xs">
-                <div className="rounded bg-[var(--color-nicom-elev)] p-2 border border-[var(--color-nicom-hairline)]">
-                  <div className="text-[var(--color-nicom-faint)]">SKU</div>
-                  <div className="font-semibold text-[var(--color-nicom-text)]">{selected.sku || "—"}</div>
+            <img src={selected.url} alt={selected.filename} style={{ width: "100%", borderRadius: "8px" }} />
+            <div className="space-y-3" style={{ fontSize: "13px", color: "var(--color-nicom-muted)" }}>
+              <h3 style={{ fontFamily: "var(--font-serif)", fontStyle: "italic", fontSize: "18px", color: "var(--color-nicom-text)", marginBottom: "12px" }}>{selected.filename}</h3>
+              <div className="grid grid-cols-2 gap-2" style={{ fontSize: "11px" }}>
+                <div style={{ borderRadius: "6px", background: "var(--color-nicom-elev)", padding: "8px", border: "0.5px solid var(--color-nicom-border)" }}>
+                  <div style={{ color: "var(--color-nicom-faint)" }}>SKU</div>
+                  <div style={{ fontWeight: 600, color: "var(--color-nicom-text)" }}>{selected.sku || "—"}</div>
                 </div>
-                <div className="rounded bg-[var(--color-nicom-elev)] p-2 border border-[var(--color-nicom-hairline)]">
-                  <div className="text-[var(--color-nicom-faint)]">Format</div>
-                  <div className="font-semibold text-[var(--color-nicom-text)]">{selected.format || "—"}</div>
+                <div style={{ borderRadius: "6px", background: "var(--color-nicom-elev)", padding: "8px", border: "0.5px solid var(--color-nicom-border)" }}>
+                  <div style={{ color: "var(--color-nicom-faint)" }}>Format</div>
+                  <div style={{ fontWeight: 600, color: "var(--color-nicom-text)" }}>{selected.format || "—"}</div>
                 </div>
-                <div className="rounded bg-[var(--color-nicom-elev)] p-2 border border-[var(--color-nicom-hairline)]">
-                  <div className="text-[var(--color-nicom-faint)]">Size</div>
-                  <div className="font-semibold text-[var(--color-nicom-text)]">{selected.size_kb} KB</div>
+                <div style={{ borderRadius: "6px", background: "var(--color-nicom-elev)", padding: "8px", border: "0.5px solid var(--color-nicom-border)" }}>
+                  <div style={{ color: "var(--color-nicom-faint)" }}>Size</div>
+                  <div style={{ fontWeight: 600, color: "var(--color-nicom-text)" }}>{selected.size_kb} KB</div>
                 </div>
-                <div className="rounded bg-[var(--color-nicom-elev)] p-2 border border-[var(--color-nicom-hairline)]">
-                  <div className="text-[var(--color-nicom-faint)]">Source</div>
-                  <div className="font-semibold text-[var(--color-nicom-text)]">{selected.source}</div>
+                <div style={{ borderRadius: "6px", background: "var(--color-nicom-elev)", padding: "8px", border: "0.5px solid var(--color-nicom-border)" }}>
+                  <div style={{ color: "var(--color-nicom-faint)" }}>Source</div>
+                  <div style={{ fontWeight: 600, color: "var(--color-nicom-text)" }}>{selected.source}</div>
                 </div>
               </div>
-              <div className="text-xs text-[var(--color-nicom-faint)]">
+              <div style={{ fontSize: "11px", color: "var(--color-nicom-faint)" }}>
                 Created: {new Date(selected.modified_at).toLocaleString()}
               </div>
               {selected.prompt_log && (
-                <div className="text-xs">
-                  <div className="mb-1 text-[var(--color-nicom-faint)]">Prompt log:</div>
-                  <code className="nicom-mono text-[var(--color-nicom-faint)] block break-all rounded bg-[var(--color-nicom-elev)] p-2">
+                <div style={{ fontSize: "11px" }}>
+                  <div style={{ marginBottom: "4px", color: "var(--color-nicom-faint)" }}>Prompt log:</div>
+                  <code className="nicom-mono" style={{ display: "block", wordBreak: "break-all", borderRadius: "4px", background: "var(--color-nicom-elev)", padding: "8px", color: "var(--color-nicom-faint)" }}>
                     {selected.prompt_log}
                   </code>
                 </div>
@@ -170,13 +201,13 @@ export default function LibraryPage() {
                 <a
                   href={selected.url}
                   download={selected.filename}
-                  className="rounded bg-[var(--color-accent)] px-4 py-2 text-xs font-semibold text-white"
+                  className="btn-onyx-primary"
                 >
                   Download
                 </a>
                 <button
                   onClick={() => setSelected(null)}
-                  className="rounded border border-[var(--color-nicom-border)] px-4 py-2 text-xs text-[var(--color-nicom-muted)]"
+                  className="btn-onyx-ghost"
                 >
                   Close
                 </button>

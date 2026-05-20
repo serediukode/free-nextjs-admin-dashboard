@@ -1,9 +1,6 @@
 "use client";
 
-import { useSidebar } from "@/context/SidebarContext";
 import AppHeader from "@/layout/AppHeader";
-import AppSidebar from "@/layout/AppSidebar";
-import Backdrop from "@/layout/Backdrop";
 import React from "react";
 
 export default function AdminLayout({
@@ -11,29 +8,33 @@ export default function AdminLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { isExpanded, isHovered, isMobileOpen } = useSidebar();
-
-  // Dynamic class for main content margin based on sidebar state
-  const mainContentMargin = isMobileOpen
-    ? "ml-0"
-    : isExpanded || isHovered
-    ? "lg:ml-[290px]"
-    : "lg:ml-[90px]";
-
   return (
-    <div className="min-h-screen xl:flex">
-      {/* Sidebar and Backdrop */}
-      <AppSidebar />
-      <Backdrop />
-      {/* Main Content Area */}
-      <div
-        className={`flex-1 transition-all  duration-300 ease-in-out ${mainContentMargin}`}
+    <div className="flex min-h-screen flex-col" style={{ background: "var(--color-nicom-bg)" }}>
+      <AppHeader />
+      <main
+        className="flex-1"
+        style={{ padding: "32px 40px 60px", maxWidth: "1600px", width: "100%", margin: "0 auto" }}
       >
-        {/* Header */}
-        <AppHeader />
-        {/* Page Content */}
-        <div className="mx-auto max-w-(--breakpoint-2xl) px-4 py-6 md:px-6 md:py-8 lg:px-8 lg:py-10">{children}</div>
-      </div>
+        {children}
+      </main>
+      <footer
+        className="border-t"
+        style={{
+          padding: "12px 32px",
+          borderColor: "var(--color-nicom-border)",
+          background: "var(--color-nicom-bg)",
+          fontFamily: "var(--font-mono)",
+          fontSize: "10px",
+          color: "var(--color-nicom-faint)",
+          letterSpacing: "1.2px",
+          textTransform: "uppercase",
+          display: "flex",
+          justifyContent: "space-between",
+        }}
+      >
+        <span>4 brands · 10 SKU · LangGraph 6-agent pipeline</span>
+        <span>Nicom Studio v0.9.8</span>
+      </footer>
     </div>
   );
 }

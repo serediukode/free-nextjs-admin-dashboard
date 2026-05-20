@@ -60,12 +60,13 @@ export default function QueuePage() {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center gap-3">
-        <label className="text-sm font-medium text-[var(--color-nicom-muted)]">Filter by status:</label>
+      <div className="onyx-filter-bar">
+        <label className="onyx-h3 mb-0 mr-2">Filter:</label>
         <select
           value={filter}
           onChange={(e) => setFilter(e.target.value)}
-          className="rounded border border-[var(--color-nicom-border)] bg-[var(--color-nicom-elev)] px-3 py-1 text-sm text-[var(--color-nicom-text)]"
+          className="onyx-select"
+          style={{ width: "auto" }}
         >
           {STATUS_OPTIONS.map((s) => (
             <option key={s} value={s}>
@@ -73,52 +74,49 @@ export default function QueuePage() {
             </option>
           ))}
         </select>
-        <button
-          onClick={load}
-          className="nicom-elev px-3 py-1 text-sm text-[var(--color-nicom-muted)] hover:text-[var(--color-nicom-text)] rounded"
-        >
+        <button onClick={load} className="btn-onyx-ghost ml-auto">
           Refresh
         </button>
       </div>
 
       {err && (
-        <div className="nicom-elev border-l-4 border-[var(--color-danger)] p-3 text-sm text-[var(--color-danger)]">
+        <div className="onyx-callout onyx-callout-danger">
           {err}
         </div>
       )}
 
-      <div className="nicom-surface overflow-hidden">
-        <table className="w-full text-sm">
-          <thead className="text-left text-[10px] uppercase tracking-wider text-[var(--color-nicom-faint)]">
+      <div className="onyx-panel overflow-hidden" style={{ padding: 0 }}>
+        <table className="onyx-table">
+          <thead>
             <tr>
-              <th className="px-4 py-3 font-medium">Title</th>
-              <th className="px-4 py-3 font-medium">SKU</th>
-              <th className="px-4 py-3 font-medium">Channel</th>
-              <th className="px-4 py-3 font-medium">Brand</th>
-              <th className="px-4 py-3 font-medium">Status</th>
-              <th className="px-4 py-3 font-medium text-right">Actions</th>
+              <th>Title</th>
+              <th>SKU</th>
+              <th>Channel</th>
+              <th>Brand</th>
+              <th>Status</th>
+              <th style={{ textAlign: "right" }}>Actions</th>
             </tr>
           </thead>
           <tbody>
             {items.length === 0 && (
               <tr>
-                <td colSpan={6} className="px-4 py-8 text-center text-[var(--color-nicom-faint)]">
+                <td colSpan={6} style={{ textAlign: "center", color: "var(--color-nicom-faint)" }}>
                   No entries match this filter.
                 </td>
               </tr>
             )}
             {items.map((it) => (
-              <tr key={it.id} className="border-t border-[var(--color-nicom-hairline)] hover:bg-[var(--color-nicom-elev)] transition-colors">
-                <td className="px-4 py-3 text-[var(--color-nicom-muted)]">{it.title || "(untitled)"}</td>
-                <td className="px-4 py-3 nicom-mono text-[var(--color-nicom-faint)]">{it.sku}</td>
-                <td className="px-4 py-3 text-[var(--color-nicom-muted)]">{it.channel}</td>
-                <td className="px-4 py-3 text-[var(--color-nicom-muted)]">{it.brand}</td>
-                <td className="px-4 py-3">
-                  <span className="nicom-chip">
+              <tr key={it.id}>
+                <td>{it.title || "(untitled)"}</td>
+                <td className="mono-cell">{it.sku}</td>
+                <td>{it.channel}</td>
+                <td>{it.brand}</td>
+                <td>
+                  <span className="onyx-pill">
                     {it.status || "—"}
                   </span>
                 </td>
-                <td className="px-4 py-3 text-right">
+                <td style={{ textAlign: "right" }}>
                   <div className="flex justify-end gap-2">
                     <button
                       disabled={busy === it.id || !it.sku || !it.channel}
@@ -134,7 +132,8 @@ export default function QueuePage() {
                           it.sku
                         )}&format=${fmt}`;
                       }}
-                      className="rounded bg-[var(--color-accent)] px-2 py-1 text-xs text-white disabled:opacity-50"
+                      className="btn-onyx-primary"
+                      style={{ padding: "5px 10px", fontSize: "9.5px" }}
                       title="Trigger generation"
                     >
                       Generate
@@ -142,14 +141,16 @@ export default function QueuePage() {
                     <button
                       disabled={busy === it.id}
                       onClick={() => setStatus(it, "Approved")}
-                      className="rounded bg-[var(--color-ok)] px-2 py-1 text-xs text-white disabled:opacity-50"
+                      className="btn-onyx-success"
+                      style={{ padding: "5px 10px", fontSize: "9.5px" }}
                     >
                       Approve
                     </button>
                     <button
                       disabled={busy === it.id}
                       onClick={() => setStatus(it, "Rejected")}
-                      className="rounded bg-[var(--color-danger)] px-2 py-1 text-xs text-white disabled:opacity-50"
+                      className="btn-onyx-danger"
+                      style={{ padding: "5px 10px", fontSize: "9.5px" }}
                     >
                       Reject
                     </button>

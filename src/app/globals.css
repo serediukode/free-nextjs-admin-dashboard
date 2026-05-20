@@ -3,36 +3,40 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme {
-  /* ───── Nicom design tokens (per nicom-product-structure-15may.html) ─────
+  /* ───── Nicom design tokens — framer-onyx palette ─────
      Editorial dark-first. Brand-coded accents. Hairline dividers.        */
   --font-sans: var(--font-inter), -apple-system, system-ui, sans-serif;
   --font-mono: var(--font-jetbrains-mono), 'SF Mono', Consolas, monospace;
-  --font-serif: Georgia, 'Times New Roman', serif;
+  --font-serif: Georgia, 'Cormorant Garamond', serif;
 
-  /* Surface scale — dark */
+  /* Surface scale — framer-onyx */
   --color-nicom-bg: #0d0d10;
-  --color-nicom-surface: #131318;
-  --color-nicom-elev: #1b1b1f;
-  --color-nicom-border: #2e2e33;
-  --color-nicom-hairline: #232328;
+  --color-nicom-surface: #18191d;
+  --color-nicom-elev: #1f2024;
+  --color-nicom-hover: #2a2b30;
+  --color-nicom-border: rgba(255,255,255,0.12);
+  --color-nicom-hairline: rgba(255,255,255,0.08);
+  --color-nicom-border-strong: rgba(255,255,255,0.24);
 
   /* Text scale */
-  --color-nicom-text: #f3f3f7;
-  --color-nicom-muted: #bfbfc9;
-  --color-nicom-faint: #85858f;
-  --color-nicom-dim: #585861;
+  --color-nicom-text: #f4f3ef;
+  --color-nicom-muted: #c2c2c5;
+  --color-nicom-faint: #9a9a9e;
+  --color-nicom-dim: #7a7a7e;
 
-  /* Brand-line accents — match brand-data/brand-lines.json */
-  --color-vika-main: #0B2A6B;
-  --color-vika-slim: #1FB6FF;
-  --color-sbr: #C8102E;
-  --color-pablo: #00E5FF;
+  /* Brand-line accents — framer-onyx */
+  --color-vika: #5b9bd5;
+  --color-vika-soft: #a6c9c5;
+  --color-sbr: #a32d2d;
+  --color-sbr-steel: #7a8a9a;
+  --color-pablo: #c79a4c;
+  --color-pablo-wine: #6e2a36;
 
   /* Semantic */
   --color-ok: #5DCAA5;
-  --color-warn: #F4C659;
-  --color-danger: #E86560;
-  --color-accent: #8F82E2;
+  --color-warn: #c79a4c;
+  --color-danger: #d97070;
+  --color-accent: #c79a4c;  /* pablo gold = primary accent */
 
   /* TailAdmin legacy preserved below — Nicom takes precedence in components */
   --font-*: initial;
@@ -803,84 +807,271 @@ span.flatpickr-weekday,
   }
 }
 
+
+
 @layer components {
-  .nicom-chip {
-    @apply inline-flex items-center px-2.5 py-1 rounded text-[10px] font-medium uppercase tracking-wider;
-    background: var(--color-nicom-elev);
-    border: 1px solid var(--color-nicom-border);
+  /* ── Topbar ── */
+  .onyx-topbar {
+    display: grid;
+    grid-template-columns: 240px 1fr 360px;
+    align-items: center;
+    gap: 24px;
+    padding: 14px 32px;
+    background: var(--color-nicom-bg);
+    border-bottom: 0.5px solid var(--color-nicom-border);
+    position: sticky; top: 0; z-index: 99999;
+  }
+  .onyx-brand-mark {
+    width: 32px; height: 32px;
+    border-radius: 6px;
+    background: linear-gradient(135deg, var(--color-pablo) 0%, var(--color-pablo-wine) 100%);
+    color: var(--color-nicom-bg);
+    display: grid; place-items: center;
+    font-weight: 700; font-size: 14px; letter-spacing: -0.5px;
+    flex-shrink: 0;
+  }
+  .onyx-brand-title {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: 15px;
+    letter-spacing: -0.3px;
+    color: var(--color-nicom-text);
+  }
+  .onyx-brand-sub {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--color-nicom-faint);
+    margin-top: 2px;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+  }
+  .onyx-tabs {
+    display: flex; gap: 0; justify-content: center;
+  }
+  .onyx-tab {
+    padding: 12px 22px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--color-nicom-dim);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    border-bottom: 1px solid transparent;
+    transition: color 0.25s, border-color 0.25s;
+    text-decoration: none;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .onyx-tab:hover { color: var(--color-nicom-muted); }
+  .onyx-tab.active {
+    color: var(--color-nicom-text);
+    border-bottom-color: var(--color-pablo);
+  }
+  .onyx-tab-ico { color: var(--color-nicom-dim); font-size: 10px; }
+  .onyx-tab.active .onyx-tab-ico { color: var(--color-pablo); }
+
+  /* ── Buttons ── */
+  .btn-onyx, .btn-onyx-primary, .btn-onyx-ghost, .btn-onyx-danger, .btn-onyx-success {
+    border: 0.5px solid var(--color-nicom-border-strong);
+    background: transparent;
+    color: var(--color-nicom-text);
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    transition: all 0.2s;
+    cursor: pointer;
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  .btn-onyx-primary {
+    background: var(--color-pablo);
+    color: var(--color-nicom-bg);
+    border-color: var(--color-pablo);
+    font-weight: 600;
+  }
+  .btn-onyx-primary:hover { background: #d4a85a; }
+  .btn-onyx-ghost:hover { background: var(--color-nicom-hover); border-color: var(--color-nicom-faint); }
+  .btn-onyx-success {
+    background: var(--color-ok);
+    color: var(--color-nicom-bg);
+    border-color: var(--color-ok);
+    font-weight: 600;
+  }
+  .btn-onyx-danger { color: var(--color-danger); border-color: rgba(217,112,112,0.3); }
+  .btn-onyx-danger:hover { background: rgba(217,112,112,0.08); }
+
+  /* ── Panel / Card ── */
+  .onyx-panel {
+    background: var(--color-nicom-surface);
+    border: 0.5px solid var(--color-nicom-border);
+    border-radius: 14px;
+    padding: 22px 24px;
+  }
+  .onyx-panel-title {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: 18px;
+    color: var(--color-nicom-text);
+    letter-spacing: -0.3px;
+    margin-bottom: 4px;
+  }
+  .onyx-panel-sub {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--color-nicom-faint);
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+  }
+  .onyx-eyebrow {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--color-nicom-faint);
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  /* ── Pills / Tags ── */
+  .onyx-pill {
+    display: inline-flex; align-items: center;
+    padding: 3px 9px;
+    border-radius: 99px;
+    font-family: var(--font-mono);
+    font-size: 9.5px;
+    background: transparent;
+    color: var(--color-nicom-muted);
+    border: 0.5px solid var(--color-nicom-border-strong);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+  .onyx-pill-vika { color: var(--color-vika); border-color: rgba(91,155,213,0.35); }
+  .onyx-pill-sbr { color: var(--color-sbr); border-color: rgba(163,45,45,0.35); }
+  .onyx-pill-pablo { color: var(--color-pablo); border-color: rgba(199,154,76,0.35); }
+  .onyx-pill-ok { color: var(--color-ok); border-color: rgba(93,202,165,0.3); }
+  .onyx-pill-danger { color: var(--color-danger); border-color: rgba(217,112,112,0.3); }
+  .onyx-pill-warn { color: var(--color-warn); border-color: rgba(199,154,76,0.3); }
+  .onyx-pill-faint { color: var(--color-nicom-faint); border-color: var(--color-nicom-border); }
+
+  /* ── Table ── */
+  .onyx-table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+  .onyx-table th {
+    text-align: left; padding: 12px 14px;
+    font-family: var(--font-mono); font-size: 10px;
+    color: var(--color-nicom-faint); letter-spacing: 1.2px;
+    text-transform: uppercase; font-weight: 500;
+    border-bottom: 0.5px solid var(--color-nicom-border-strong);
+  }
+  .onyx-table td {
+    padding: 13px 14px;
+    border-bottom: 0.5px solid var(--color-nicom-border);
+    vertical-align: top;
     color: var(--color-nicom-muted);
   }
+  .onyx-table tr:last-child td { border-bottom: none; }
+  .onyx-table tr:hover td { background: rgba(255,255,255,0.02); }
+  .onyx-table .mono-cell { font-family: var(--font-mono); font-size: 11px; color: var(--color-nicom-faint); }
+
+  /* ── Inputs ── */
+  .onyx-input, .onyx-select {
+    width: 100%;
+    padding: 9px 12px;
+    background: var(--color-nicom-elev);
+    border: 0.5px solid var(--color-nicom-border);
+    border-radius: 4px;
+    color: var(--color-nicom-text);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.3px;
+  }
+  .onyx-input:focus, .onyx-select:focus {
+    outline: none;
+    border-color: var(--color-pablo);
+  }
+  .onyx-input::placeholder { color: var(--color-nicom-dim); }
+
+  /* ── Filter bar ── */
+  .onyx-filter-bar {
+    display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+    margin-bottom: 18px; padding: 12px 16px;
+    background: var(--color-nicom-elev);
+    border: 0.5px solid var(--color-nicom-border);
+    border-radius: 6px;
+  }
+  .onyx-filter-pill {
+    padding: 6px 12px; border-radius: 99px;
+    font-family: var(--font-mono); font-size: 10px;
+    color: var(--color-nicom-muted); border: 0.5px solid var(--color-nicom-border);
+    background: transparent; letter-spacing: 1.2px; text-transform: uppercase;
+    transition: all 0.2s; cursor: pointer;
+  }
+  .onyx-filter-pill:hover { background: var(--color-nicom-hover); color: var(--color-nicom-text); }
+  .onyx-filter-pill.active { background: var(--color-pablo); color: var(--color-nicom-bg); border-color: var(--color-pablo); font-weight: 600; }
+
+  /* ── KPI ── */
+  .onyx-kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--color-nicom-border-strong); border-radius: 6px; overflow: hidden; margin-bottom: 28px; }
+  .onyx-kpi { background: var(--color-nicom-bg); padding: 20px 22px; }
+  .onyx-kpi-label { font-family: var(--font-mono); font-size: 10px; color: var(--color-nicom-faint); letter-spacing: 1.5px; text-transform: uppercase; }
+  .onyx-kpi-value { font-family: var(--font-serif); font-style: italic; font-size: 38px; color: var(--color-nicom-text); line-height: 1; margin: 12px 0 6px; letter-spacing: -1.2px; }
+  .onyx-kpi-foot { font-family: var(--font-mono); font-size: 10px; letter-spacing: 1px; text-transform: uppercase; color: var(--color-ok); }
+  .onyx-kpi.accent-vika { border-left: 2px solid var(--color-vika); }
+  .onyx-kpi.accent-sbr { border-left: 2px solid var(--color-sbr); }
+  .onyx-kpi.accent-pablo { border-left: 2px solid var(--color-pablo); }
+  .onyx-kpi.accent-ok { border-left: 2px solid var(--color-ok); }
+
+  /* ── Modal / Lightbox ── */
+  .onyx-modal-backdrop {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.85);
+    display: grid; place-items: center;
+    z-index: 999999; padding: 28px;
+    backdrop-filter: blur(8px);
+  }
+  .onyx-modal {
+    background: var(--color-nicom-surface);
+    border: 0.5px solid var(--color-nicom-border-strong);
+    border-radius: 14px;
+    overflow: hidden;
+  }
+
+  /* ── Section heading ── */
+  .onyx-section-h { font-family: var(--font-serif); font-style: italic; font-size: 22px; color: var(--color-nicom-text); letter-spacing: -0.3px; margin-bottom: 18px; }
+  .onyx-h3 { font-family: var(--font-mono); font-size: 11px; color: var(--color-nicom-faint); letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 8px; font-weight: 500; }
+  .onyx-callout { padding: 14px 18px; border-radius: 6px; font-size: 12px; margin: 16px 0; background: rgba(199,154,76,0.06); border-left: 2px solid var(--color-pablo); color: var(--color-nicom-muted); }
+  .onyx-callout-danger { background: rgba(217,112,112,0.06); border-left-color: var(--color-danger); }
+  .onyx-callout strong { color: var(--color-nicom-text); }
+
+  /* Keep backward compat aliases */
+  .nicom-surface { background: var(--color-nicom-surface); border: 0.5px solid var(--color-nicom-border); border-radius: 14px; }
+  .nicom-elev { background: var(--color-nicom-elev); border: 0.5px solid var(--color-nicom-border); border-radius: 6px; }
+  .nicom-chip { @apply inline-flex items-center px-2.5 py-1 rounded text-[10px] font-medium uppercase tracking-wider; background: var(--color-nicom-elev); border: 0.5px solid var(--color-nicom-border-strong); color: var(--color-nicom-muted); font-family: var(--font-mono); }
   .nicom-chip-ok { color: var(--color-ok); }
   .nicom-chip-warn { color: var(--color-warn); }
   .nicom-chip-danger { color: var(--color-danger); }
-  .nicom-chip-accent { color: var(--color-accent); }
-
-  .nicom-surface {
-    background: var(--color-nicom-surface);
-    border: 1px solid var(--color-nicom-border);
-    border-radius: 10px;
-  }
-  .nicom-elev {
-    background: var(--color-nicom-elev);
-    border: 1px solid var(--color-nicom-border);
-    border-radius: 8px;
-  }
-  .nicom-hairline {
-    border-color: var(--color-nicom-hairline);
-  }
-
-  .nicom-section-num {
-    @apply text-2xl font-bold;
-    color: var(--color-nicom-dim);
-  }
-  .nicom-h4 {
-    @apply text-xs font-semibold uppercase tracking-wider;
-    color: var(--color-nicom-muted);
-  }
-
-  /* Brand-line strip — used per SKU/post */
-  .brand-vika-main {
-    background: rgba(11, 42, 107, 0.3);
-    color: #6b9eff;
-    border: 1px solid rgba(11, 42, 107, 0.6);
-  }
-  .brand-vika-slim {
-    background: rgba(31, 182, 255, 0.15);
-    color: var(--color-vika-slim);
-    border: 1px solid rgba(31, 182, 255, 0.4);
-  }
-  .brand-sbr {
-    background: rgba(200, 16, 46, 0.15);
-    color: #E76A7C;
-    border: 1px solid rgba(200, 16, 46, 0.4);
-  }
-  .brand-pablo {
-    background: rgba(0, 229, 255, 0.1);
-    color: var(--color-pablo);
-    border: 1px solid rgba(0, 229, 255, 0.3);
-  }
-
-  /* Status left-border accents (flow steps, KPI tiles) */
+  .nicom-chip-accent { color: var(--color-pablo); }
+  .nicom-mono { font-family: var(--font-mono); font-size: 12px; }
+  .nicom-h4 { font-family: var(--font-mono); font-size: 10px; color: var(--color-nicom-faint); letter-spacing: 1.5px; text-transform: uppercase; font-weight: 500; }
+  .nicom-section-num { font-size: 24px; font-weight: 700; color: var(--color-nicom-dim); font-family: var(--font-mono); }
+  .nicom-hairline { border-color: var(--color-nicom-border); }
   .nicom-status-ok { border-left: 3px solid var(--color-ok); }
   .nicom-status-warn { border-left: 3px solid var(--color-warn); }
   .nicom-status-danger { border-left: 3px solid var(--color-danger); }
-  .nicom-status-accent { border-left: 3px solid var(--color-accent); }
-
-  .nicom-mono {
-    font-family: var(--font-mono);
-    font-size: 12px;
-  }
+  .nicom-status-accent { border-left: 3px solid var(--color-pablo); }
+  .brand-vika-main { background: rgba(91,155,213,0.15); color: var(--color-vika); border: 0.5px solid rgba(91,155,213,0.35); }
+  .brand-vika-slim { background: rgba(91,155,213,0.1); color: var(--color-vika); border: 0.5px solid rgba(91,155,213,0.25); }
+  .brand-sbr { background: rgba(163,45,45,0.15); color: #e07a8a; border: 0.5px solid rgba(163,45,45,0.35); }
+  .brand-pablo { background: rgba(199,154,76,0.1); color: var(--color-pablo); border: 0.5px solid rgba(199,154,76,0.3); }
 }
 
-/* nicom accent override for dark-mode active nav state (replaces TailAdmin brand-400 green) */
+/* nicom accent override for dark-mode active nav state — pablo gold */
 html.dark .menu-item-active,
 html.dark .menu-dropdown-item-active {
-  background-color: rgb(143 130 226 / 0.1);
-  color: var(--color-accent);
+  background-color: rgb(199 154 76 / 0.1);
+  color: var(--color-pablo);
 }
 html.dark .menu-item-icon-active {
-  color: var(--color-accent);
+  color: var(--color-pablo);
 }
 html.dark .menu-item-arrow-active {
-  color: var(--color-accent);
+  color: var(--color-pablo);
 }

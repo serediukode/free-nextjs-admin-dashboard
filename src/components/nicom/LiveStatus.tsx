@@ -38,11 +38,11 @@ function Surface({
             ? "nicom-status-accent"
             : "";
   return (
-    <section className={`nicom-surface p-5 ${borderClass}`}>
-      <header className="mb-4 flex items-baseline gap-3 border-b nicom-hairline pb-3">
+    <section className={`onyx-panel ${borderClass}`}>
+      <header className="mb-4 flex items-baseline gap-3 pb-3" style={{ borderBottom: "0.5px solid var(--color-nicom-border)" }}>
         <span className="nicom-section-num">{num}</span>
-        <h3 className="text-base font-semibold text-[var(--color-nicom-text)]">{title}</h3>
-        {hint && <span className="nicom-chip ml-auto">{hint}</span>}
+        <h3 className="onyx-h3 mb-0">{title}</h3>
+        {hint && <span className="onyx-pill ml-auto" style={{ fontSize: "9px" }}>{hint}</span>}
       </header>
       {children}
     </section>
@@ -106,41 +106,15 @@ export default function LiveStatus() {
 
   return (
     <div className="space-y-6">
-      {/* Editorial hero — matches nicom-product-structure-15may.html */}
-      <div
-        className="relative -mx-4 overflow-hidden border-b pb-8 pt-10 md:-mx-6 lg:-mx-8"
-        style={{ borderColor: "var(--color-nicom-hairline)", background: "var(--color-nicom-bg)" }}
-      >
-        {/* Vertical grid lines decoration */}
-        <div className="pointer-events-none absolute inset-0 flex opacity-[0.18]">
-          {Array.from({ length: 16 }).map((_, i) => (
-            <div key={i} className="flex-1 border-r" style={{ borderColor: "var(--color-nicom-hairline)" }} />
-          ))}
-        </div>
-
-        <div className="relative px-4 md:px-6 lg:px-8">
-          {/* Chips row */}
-          <div className="mb-5 flex flex-wrap gap-2">
-            <span className="nicom-chip">NICOM AI SMM</span>
-            <span className="nicom-chip nicom-chip-ok">LIVE PRODUCTION</span>
-            <span className="nicom-chip">20 MAY 2026</span>
-            <span className="nicom-chip nicom-chip-accent">v0.9.8</span>
-            <span className="ml-auto nicom-mono text-xs" style={{ color: "var(--color-nicom-faint)" }}>
-              {new Date(data.now).toLocaleTimeString()}
-            </span>
-          </div>
-
-          {/* Title */}
-          <h1
-            className="mb-2 text-4xl font-bold tracking-tight lg:text-5xl"
-            style={{ color: "var(--color-nicom-text)", letterSpacing: "-1.5px" }}
-          >
-            Control Center
-          </h1>
-          <p style={{ color: "var(--color-nicom-muted)" }}>
-            Nicom AI SMM Factory · LangGraph 6-agent pipeline · 4 brands · 10 SKU
-          </p>
-        </div>
+      {/* Page header */}
+      <div className="mb-8">
+        <p className="onyx-eyebrow mb-2">Control Center · Live</p>
+        <h1 style={{ fontFamily: "var(--font-serif)", fontStyle: "italic", fontSize: "32px", letterSpacing: "-0.3px", color: "var(--color-nicom-text)", marginBottom: "8px" }}>
+          Factory Status
+        </h1>
+        <p style={{ color: "var(--color-nicom-muted)", fontSize: "13px" }}>
+          Nicom AI SMM Factory · LangGraph 6-agent pipeline · 4 brands · 10 SKU
+        </p>
       </div>
 
       <div className="grid grid-cols-12 gap-4">

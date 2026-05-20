@@ -29,40 +29,40 @@ export default function SettingsPage() {
       .catch((e) => setErr(String(e)));
   }, []);
 
-  if (err) return <div className="text-[var(--color-danger)]">Error: {err}</div>;
-  if (!data) return <div className="text-[var(--color-nicom-faint)]">Loading…</div>;
+  if (err) return <div style={{ color: "var(--color-danger)" }}>Error: {err}</div>;
+  if (!data) return <div style={{ color: "var(--color-nicom-faint)" }}>Loading…</div>;
 
   return (
     <div className="space-y-6">
       <ModelSwitcher />
 
-      <section className="nicom-surface p-5">
-        <h3 className="nicom-h4 mb-3">Project</h3>
-        <dl className="space-y-2 text-sm">
+      <section className="onyx-panel">
+        <p className="onyx-eyebrow mb-4">Project</p>
+        <dl className="space-y-2" style={{ fontSize: "13px" }}>
           <div className="flex justify-between">
-            <dt className="text-[var(--color-nicom-faint)]">Root</dt>
-            <dd className="nicom-mono text-[var(--color-nicom-text)]">{data.project_root}</dd>
+            <dt style={{ color: "var(--color-nicom-faint)" }}>Root</dt>
+            <dd className="nicom-mono" style={{ color: "var(--color-nicom-text)" }}>{data.project_root}</dd>
           </div>
           <div className="flex justify-between">
-            <dt className="text-[var(--color-nicom-faint)]">Approval mode default</dt>
-            <dd className="nicom-mono text-[var(--color-nicom-text)]">{data.approval_mode_default}</dd>
+            <dt style={{ color: "var(--color-nicom-faint)" }}>Approval mode default</dt>
+            <dd className="nicom-mono" style={{ color: "var(--color-nicom-text)" }}>{data.approval_mode_default}</dd>
           </div>
           <div className="flex justify-between">
-            <dt className="text-[var(--color-nicom-faint)]">Pletor agents</dt>
-            <dd className="nicom-mono text-[var(--color-nicom-text)]">
+            <dt style={{ color: "var(--color-nicom-faint)" }}>Pletor agents</dt>
+            <dd className="nicom-mono" style={{ color: "var(--color-nicom-text)" }}>
               {data.pletor_agents === null ? "n/a" : `${data.pletor_agents}/6`}
             </dd>
           </div>
         </dl>
       </section>
 
-      <section className="nicom-surface p-5">
-        <h3 className="nicom-h4 mb-3">Launchd services</h3>
-        <ul className="space-y-2 text-sm">
+      <section className="onyx-panel">
+        <p className="onyx-eyebrow mb-4">Launchd services</p>
+        <ul className="space-y-2" style={{ fontSize: "13px" }}>
           {data.launchd.map((l) => (
             <li key={l.name} className="flex items-center justify-between">
-              <span className="nicom-mono text-[var(--color-nicom-text)]">{l.name}</span>
-              <span className="text-[var(--color-nicom-faint)]">
+              <span className="nicom-mono" style={{ color: "var(--color-nicom-text)" }}>{l.name}</span>
+              <span style={{ color: "var(--color-nicom-faint)" }}>
                 {l.loaded ? (l.pid ? `running (pid ${l.pid})` : "loaded") : "not loaded"}
               </span>
             </li>
@@ -70,24 +70,26 @@ export default function SettingsPage() {
         </ul>
       </section>
 
-      <section className="nicom-surface p-5">
-        <h3 className="nicom-h4 mb-3">Environment keys</h3>
-        <table className="w-full text-sm">
-          <thead className="text-left text-[10px] uppercase tracking-wider text-[var(--color-nicom-faint)]">
+      <section className="onyx-panel overflow-hidden" style={{ padding: 0 }}>
+        <div style={{ padding: "22px 24px 12px" }}>
+          <p className="onyx-eyebrow mb-0">Environment keys</p>
+        </div>
+        <table className="onyx-table">
+          <thead>
             <tr>
-              <th className="pb-2 font-medium">Key</th>
-              <th className="pb-2 font-medium">Project .env</th>
-              <th className="pb-2 font-medium">Daemon .env</th>
-              <th className="pb-2 font-medium text-right">Masked</th>
+              <th>Key</th>
+              <th>Project .env</th>
+              <th>Daemon .env</th>
+              <th style={{ textAlign: "right" }}>Masked</th>
             </tr>
           </thead>
           <tbody>
             {data.env.map((e) => (
-              <tr key={e.key} className="border-t border-[var(--color-nicom-hairline)]">
-                <td className="py-2 nicom-mono text-[var(--color-nicom-text)]">{e.key}</td>
-                <td className="py-2 text-[var(--color-nicom-muted)]">{e.set_in_project ? "✓" : "—"}</td>
-                <td className="py-2 text-[var(--color-nicom-muted)]">{e.set_in_daemon ? "✓" : "—"}</td>
-                <td className="py-2 text-right nicom-mono text-xs text-[var(--color-nicom-faint)]">{e.masked || "—"}</td>
+              <tr key={e.key}>
+                <td className="mono-cell" style={{ color: "var(--color-nicom-text)" }}>{e.key}</td>
+                <td>{e.set_in_project ? "✓" : "—"}</td>
+                <td>{e.set_in_daemon ? "✓" : "—"}</td>
+                <td className="mono-cell" style={{ textAlign: "right", fontSize: "11px" }}>{e.masked || "—"}</td>
               </tr>
             ))}
           </tbody>
