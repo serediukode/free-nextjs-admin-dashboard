@@ -871,3 +871,16 @@ span.flatpickr-weekday,
     font-size: 12px;
   }
 }
+
+/* nicom accent override for dark-mode active nav state (replaces TailAdmin brand-400 green) */
+html.dark .menu-item-active,
+html.dark .menu-dropdown-item-active {
+  background-color: rgb(143 130 226 / 0.1);
+  color: var(--color-accent);
+}
+html.dark .menu-item-icon-active {
+  color: var(--color-accent);
+}
+html.dark .menu-item-arrow-active {
+  color: var(--color-accent);
+}

@@ -105,15 +105,42 @@ export default function LiveStatus() {
   const queue = "error" in data.queue ? null : data.queue;
 
   return (
-    <div className="space-y-4">
-      {/* Hero strip */}
-      <div className="flex flex-wrap items-center gap-2 text-[var(--color-nicom-muted)]">
-        <span className="nicom-chip">LIVE STATUS</span>
-        <span className="nicom-chip nicom-chip-accent">v0.9.8</span>
-        <span className="nicom-chip nicom-chip-ok">5s POLL</span>
-        <span className="ml-auto nicom-mono text-[var(--color-nicom-faint)]">
-          {new Date(data.now).toLocaleTimeString()}
-        </span>
+    <div className="space-y-6">
+      {/* Editorial hero — matches nicom-product-structure-15may.html */}
+      <div
+        className="relative -mx-4 overflow-hidden border-b pb-8 pt-10 md:-mx-6 lg:-mx-8"
+        style={{ borderColor: "var(--color-nicom-hairline)", background: "var(--color-nicom-bg)" }}
+      >
+        {/* Vertical grid lines decoration */}
+        <div className="pointer-events-none absolute inset-0 flex opacity-[0.18]">
+          {Array.from({ length: 16 }).map((_, i) => (
+            <div key={i} className="flex-1 border-r" style={{ borderColor: "var(--color-nicom-hairline)" }} />
+          ))}
+        </div>
+
+        <div className="relative px-4 md:px-6 lg:px-8">
+          {/* Chips row */}
+          <div className="mb-5 flex flex-wrap gap-2">
+            <span className="nicom-chip">NICOM AI SMM</span>
+            <span className="nicom-chip nicom-chip-ok">LIVE PRODUCTION</span>
+            <span className="nicom-chip">20 MAY 2026</span>
+            <span className="nicom-chip nicom-chip-accent">v0.9.8</span>
+            <span className="ml-auto nicom-mono text-xs" style={{ color: "var(--color-nicom-faint)" }}>
+              {new Date(data.now).toLocaleTimeString()}
+            </span>
+          </div>
+
+          {/* Title */}
+          <h1
+            className="mb-2 text-4xl font-bold tracking-tight lg:text-5xl"
+            style={{ color: "var(--color-nicom-text)", letterSpacing: "-1.5px" }}
+          >
+            Control Center
+          </h1>
+          <p style={{ color: "var(--color-nicom-muted)" }}>
+            Nicom AI SMM Factory · LangGraph 6-agent pipeline · 4 brands · 10 SKU
+          </p>
+        </div>
       </div>
 
       <div className="grid grid-cols-12 gap-4">
