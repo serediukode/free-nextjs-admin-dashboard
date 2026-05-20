@@ -62,26 +62,26 @@ export default function ModelSwitcher() {
     }
   }
 
-  if (err) return <div className="text-sm text-rose-500">Error: {err}</div>;
-  if (!data) return <div className="text-sm">Loading models…</div>;
+  if (err) return <div className="text-sm text-[var(--color-danger)]">Error: {err}</div>;
+  if (!data) return <div className="text-sm text-[var(--color-nicom-faint)]">Loading models…</div>;
 
   return (
-    <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900">
+    <div className="nicom-surface p-5">
       <div className="mb-3 flex items-center justify-between">
-        <h3 className="text-sm font-semibold uppercase tracking-wide text-gray-500">
+        <h3 className="text-[10px] font-semibold uppercase tracking-wider text-[var(--color-nicom-faint)]">
           Model routing (cost optimization)
         </h3>
-        <span className="text-xs text-gray-500">
+        <span className="text-xs text-[var(--color-nicom-faint)]">
           {Object.keys(data.overrides).length} override
           {Object.keys(data.overrides).length === 1 ? "" : "s"}
         </span>
       </div>
       <table className="w-full text-sm">
-        <thead className="text-left text-xs uppercase tracking-wide text-gray-500">
+        <thead className="text-left text-[10px] uppercase tracking-wider text-[var(--color-nicom-faint)]">
           <tr>
-            <th className="pb-2">Task</th>
-            <th className="pb-2">Active model</th>
-            <th className="pb-2">Default</th>
+            <th className="pb-2 font-medium">Task</th>
+            <th className="pb-2 font-medium">Active model</th>
+            <th className="pb-2 font-medium">Default</th>
           </tr>
         </thead>
         <tbody>
@@ -89,40 +89,36 @@ export default function ModelSwitcher() {
             const isDefault = model === data.defaults[task];
             const isFree = FREE_MODELS.has(model);
             return (
-              <tr key={task} className="border-t border-gray-100 dark:border-gray-800">
-                <td className="py-2">{TASK_LABELS[task] || task}</td>
+              <tr key={task} className="border-t border-[var(--color-nicom-hairline)]">
+                <td className="py-2 text-[var(--color-nicom-text)]">{TASK_LABELS[task] || task}</td>
                 <td className="py-2">
                   <div className="flex items-center gap-2">
                     <select
                       value={model}
                       disabled={busy === task}
                       onChange={(e) => setModel(task, e.target.value)}
-                      className="rounded border border-gray-200 bg-white px-2 py-1 text-xs dark:border-gray-700 dark:bg-gray-800"
+                      className="rounded border border-[var(--color-nicom-border)] bg-[var(--color-nicom-elev)] px-2 py-1 text-xs text-[var(--color-nicom-text)]"
                     >
                       {data.available.map((m) => (
                         <option key={m}>{m}</option>
                       ))}
                     </select>
                     {isFree && (
-                      <span className="rounded bg-emerald-100 px-1.5 py-0.5 text-[10px] text-emerald-700">
-                        FREE
-                      </span>
+                      <span className="nicom-chip nicom-chip-ok">FREE</span>
                     )}
                     {!isDefault && (
-                      <span className="rounded bg-amber-100 px-1.5 py-0.5 text-[10px] text-amber-700">
-                        override
-                      </span>
+                      <span className="nicom-chip nicom-chip-warn">override</span>
                     )}
                   </div>
                 </td>
-                <td className="py-2 text-xs text-gray-500">{data.defaults[task]}</td>
+                <td className="py-2 text-xs text-[var(--color-nicom-faint)]">{data.defaults[task]}</td>
               </tr>
             );
           })}
         </tbody>
       </table>
-      <p className="mt-3 text-xs text-gray-500">
-        Writes to <code>.model-config.json</code>. FREE = local Ollama. Restart daemon to apply.
+      <p className="mt-3 text-xs text-[var(--color-nicom-faint)]">
+        Writes to <code className="nicom-mono">.model-config.json</code>. FREE = local Ollama. Restart daemon to apply.
       </p>
     </div>
   );

@@ -61,10 +61,10 @@ type StatusResponse = {
 };
 
 const statusBadge: Record<string, string> = {
-  running: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30",
-  idle: "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/30",
-  disabled: "bg-gray-500/10 text-gray-500 border-gray-500/30",
-  unknown: "bg-gray-500/10 text-gray-500 border-gray-500/30",
+  running: "bg-[var(--color-ok)]/10 text-[var(--color-ok)] border-[var(--color-ok)]/30",
+  idle:    "bg-[var(--color-warn)]/10 text-[var(--color-warn)] border-[var(--color-warn)]/30",
+  disabled:"bg-[var(--color-nicom-elev)] text-[var(--color-nicom-faint)] border-[var(--color-nicom-border)]",
+  unknown: "bg-[var(--color-nicom-elev)] text-[var(--color-nicom-faint)] border-[var(--color-nicom-border)]",
 };
 
 function fmtAgo(iso?: string): string {
@@ -123,13 +123,13 @@ export default function AgentsPage() {
     <div className="space-y-6">
       <div className="flex items-baseline justify-between">
         <div>
-          <h1 className="text-xl font-semibold">Agents</h1>
-          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+          <h1 className="text-xl font-semibold text-[var(--color-nicom-text)]">Agents</h1>
+          <p className="mt-1 text-sm text-[var(--color-nicom-muted)]">
             6 production agents у LangGraph pipeline. Heartbeats з state DB · refresh кожні 10s.
           </p>
         </div>
-        <div className="text-xs text-gray-400">
-          {err ? <span className="text-rose-500">offline · {err}</span> : data ? "live" : "loading…"}
+        <div className="nicom-mono text-xs text-[var(--color-nicom-faint)]">
+          {err ? <span className="text-[var(--color-danger)]">offline · {err}</span> : data ? "live" : "loading…"}
         </div>
       </div>
 
@@ -137,17 +137,12 @@ export default function AgentsPage() {
         {AGENTS.map((a) => {
           const status = deriveStatus(hbByAgent[a.id]);
           return (
-            <div
-              key={a.id}
-              className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-white/5"
-            >
+            <div key={a.id} className="nicom-surface p-5">
               <div className="flex items-start justify-between gap-3">
                 <div>
-                  <div className="text-sm font-mono uppercase tracking-wider text-gray-500 dark:text-gray-400">
-                    {a.id}
-                  </div>
-                  <h2 className="mt-1 text-lg font-semibold">{a.name}</h2>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">{a.role}</p>
+                  <div className="nicom-mono text-[var(--color-nicom-faint)]">{a.id}</div>
+                  <h2 className="mt-1 text-lg font-semibold text-[var(--color-nicom-text)]">{a.name}</h2>
+                  <p className="text-xs text-[var(--color-nicom-faint)]">{a.role}</p>
                 </div>
                 <span
                   className={`rounded-full border px-2.5 py-0.5 text-[10px] font-medium uppercase tracking-wider ${status.color}`}
@@ -155,17 +150,19 @@ export default function AgentsPage() {
                   {status.label}
                 </span>
               </div>
-              <p className="mt-3 text-sm text-gray-600 dark:text-gray-300">{a.description}</p>
-              <div className="mt-3 text-[11px] text-gray-400">last seen: {status.lastSeen}</div>
+              <p className="mt-3 text-sm text-[var(--color-nicom-muted)]">{a.description}</p>
+              <div className="mt-3 nicom-mono text-[11px] text-[var(--color-nicom-faint)]">
+                last seen: {status.lastSeen}
+              </div>
             </div>
           );
         })}
       </div>
 
-      <div className="rounded-2xl border border-emerald-500/30 bg-emerald-500/5 p-4 text-sm text-emerald-900 dark:text-emerald-200">
-        <strong className="font-medium">Note:</strong> openclaw iframe видалено (2026-05-14).
+      <div className="nicom-elev border-l-4 border-[var(--color-ok)] p-4 text-sm text-[var(--color-nicom-muted)]">
+        <strong className="font-medium text-[var(--color-nicom-text)]">Note:</strong> openclaw iframe видалено (2026-05-14).
         Agent runtime тепер локальний — через LangGraph + daemon з SQLite state.
-        Status картки оновлюються кожні 10 секунд з `agent_heartbeats` таблиці.
+        Status картки оновлюються кожні 10 секунд з <code className="nicom-mono">agent_heartbeats</code> таблиці.
       </div>
     </div>
   );

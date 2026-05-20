@@ -15,19 +15,19 @@ type Item = {
 };
 
 const STATUS_COLOR: Record<string, string> = {
-  "In Brief": "bg-amber-200 text-amber-900",
-  Approved: "bg-emerald-200 text-emerald-900",
-  "In Production": "bg-sky-200 text-sky-900",
-  Published: "bg-indigo-200 text-indigo-900",
-  Rejected: "bg-rose-200 text-rose-900",
-  "Legacy v1": "bg-gray-200 text-gray-700",
+  "In Brief":      "bg-[var(--color-warn)]/15 text-[var(--color-warn)]",
+  Approved:        "bg-[var(--color-ok)]/15 text-[var(--color-ok)]",
+  "In Production": "bg-[var(--color-vika-slim)]/15 text-[var(--color-vika-slim)]",
+  Published:       "bg-[var(--color-accent)]/15 text-[var(--color-accent)]",
+  Rejected:        "bg-[var(--color-danger)]/15 text-[var(--color-danger)]",
+  "Legacy v1":     "bg-[var(--color-nicom-elev)] text-[var(--color-nicom-faint)]",
 };
 
 const BRAND_BORDER: Record<string, string> = {
-  "VIKA Main": "border-l-4 border-blue-500",
-  "VIKA Slim": "border-l-4 border-pink-500",
-  SBR: "border-l-4 border-gray-500",
-  Pablo: "border-l-4 border-purple-500",
+  "VIKA Main": "border-l-2 border-[var(--color-vika-slim)]",
+  "VIKA Slim":  "border-l-2 border-[var(--color-vika-slim)]/60",
+  SBR:          "border-l-2 border-[var(--color-sbr)]",
+  Pablo:        "border-l-2 border-[var(--color-pablo)]",
 };
 
 function startOfMonth(d: Date) {
@@ -51,7 +51,6 @@ export default function ContentPlanCalendar() {
       .catch((e) => setErr(String(e)));
   }, []);
 
-  // group items by YYYY-MM-DD
   const byDate = new Map<string, Item[]>();
   for (const it of items) {
     if (!it.date) continue;
@@ -61,8 +60,8 @@ export default function ContentPlanCalendar() {
   }
 
   const total = daysInMonth(cursor);
-  const firstDay = cursor.getDay(); // 0=Sun
-  const offset = (firstDay + 6) % 7; // make Mon=0
+  const firstDay = cursor.getDay();
+  const offset = (firstDay + 6) % 7;
   const cells: { date: Date | null; iso: string }[] = [];
   for (let i = 0; i < offset; i++) cells.push({ date: null, iso: "" });
   for (let d = 1; d <= total; d++) {
@@ -76,41 +75,45 @@ export default function ContentPlanCalendar() {
 
   return (
     <div className="space-y-4">
-      {err && <div className="rounded bg-rose-100 p-3 text-sm text-rose-700">{err}</div>}
+      {err && (
+        <div className="nicom-elev border-l-4 border-[var(--color-danger)] p-3 text-sm text-[var(--color-danger)]">
+          {err}
+        </div>
+      )}
 
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <button
             onClick={() => setCursor(new Date(cursor.getFullYear(), cursor.getMonth() - 1, 1))}
-            className="rounded bg-gray-100 px-3 py-1 text-sm dark:bg-gray-800"
+            className="rounded border border-[var(--color-nicom-border)] bg-[var(--color-nicom-elev)] px-3 py-1 text-sm text-[var(--color-nicom-muted)] hover:text-[var(--color-nicom-text)]"
           >
             ←
           </button>
-          <div className="min-w-[180px] text-center text-lg font-semibold capitalize">
+          <div className="min-w-[180px] text-center text-lg font-semibold capitalize text-[var(--color-nicom-text)]">
             {monthLabel}
           </div>
           <button
             onClick={() => setCursor(new Date(cursor.getFullYear(), cursor.getMonth() + 1, 1))}
-            className="rounded bg-gray-100 px-3 py-1 text-sm dark:bg-gray-800"
+            className="rounded border border-[var(--color-nicom-border)] bg-[var(--color-nicom-elev)] px-3 py-1 text-sm text-[var(--color-nicom-muted)] hover:text-[var(--color-nicom-text)]"
           >
             →
           </button>
           <button
             onClick={() => setCursor(startOfMonth(new Date()))}
-            className="rounded bg-emerald-500 px-3 py-1 text-sm text-white"
+            className="nicom-chip nicom-chip-ok hover:opacity-80"
           >
             Today
           </button>
         </div>
-        <div className="text-xs text-gray-500">
+        <div className="nicom-mono text-xs text-[var(--color-nicom-faint)]">
           {items.length} entries · {undated} undated
         </div>
       </div>
 
-      <div className="rounded-2xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900">
-        <div className="grid grid-cols-7 border-b border-gray-100 text-xs uppercase tracking-wide text-gray-500 dark:border-gray-800">
+      <div className="nicom-surface overflow-hidden">
+        <div className="grid grid-cols-7 border-b border-[var(--color-nicom-hairline)] text-[10px] uppercase tracking-wider text-[var(--color-nicom-faint)]">
           {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((d) => (
-            <div key={d} className="border-r border-gray-100 px-2 py-2 last:border-r-0 dark:border-gray-800">
+            <div key={d} className="border-r border-[var(--color-nicom-hairline)] px-2 py-2 last:border-r-0 font-medium">
               {d}
             </div>
           ))}
@@ -122,20 +125,20 @@ export default function ContentPlanCalendar() {
             return (
               <div
                 key={i}
-                className={`min-h-[110px] border-b border-r border-gray-100 p-1 last-col:border-r-0 dark:border-gray-800 ${
-                  cell.date ? "" : "bg-gray-50/50 dark:bg-gray-800/30"
-                } ${today ? "bg-emerald-50/40 dark:bg-emerald-900/10" : ""}`}
+                className={`min-h-[110px] border-b border-r border-[var(--color-nicom-hairline)] p-1 last-col:border-r-0 ${
+                  cell.date ? "" : "bg-[var(--color-nicom-bg)]"
+                } ${today ? "bg-[var(--color-ok)]/5" : ""}`}
               >
                 {cell.date && (
-                  <div className="mb-1 text-xs text-gray-500">{cell.date.getDate()}</div>
+                  <div className="mb-1 text-xs text-[var(--color-nicom-faint)]">{cell.date.getDate()}</div>
                 )}
                 <div className="space-y-1">
                   {events.slice(0, 4).map((it) => (
                     <button
                       key={it.id}
                       onClick={() => setSelected(it)}
-                      className={`block w-full truncate rounded px-1.5 py-0.5 text-left text-[11px] hover:opacity-90 ${
-                        STATUS_COLOR[it.status] || "bg-gray-100 text-gray-700"
+                      className={`block w-full truncate rounded px-1.5 py-0.5 text-left text-[11px] hover:opacity-80 ${
+                        STATUS_COLOR[it.status] || "bg-[var(--color-nicom-elev)] text-[var(--color-nicom-muted)]"
                       } ${BRAND_BORDER[it.brand] || ""}`}
                       title={`${it.brand} · ${it.channel} · ${it.status}`}
                     >
@@ -143,7 +146,7 @@ export default function ContentPlanCalendar() {
                     </button>
                   ))}
                   {events.length > 4 && (
-                    <div className="px-1 text-[10px] text-gray-500">+{events.length - 4} more</div>
+                    <div className="px-1 text-[10px] text-[var(--color-nicom-faint)]">+{events.length - 4} more</div>
                   )}
                 </div>
               </div>
@@ -154,63 +157,56 @@ export default function ContentPlanCalendar() {
 
       {selected && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4"
           onClick={() => setSelected(null)}
         >
           <div
-            className="max-h-[90vh] w-full max-w-xl overflow-auto rounded-2xl bg-white p-6 shadow-2xl dark:bg-gray-900"
+            className="nicom-surface max-h-[90vh] w-full max-w-xl overflow-auto p-6"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="mb-3 flex items-start justify-between gap-3">
-              <h2 className="text-lg font-semibold">{selected.title || "(untitled)"}</h2>
+              <h2 className="text-lg font-semibold text-[var(--color-nicom-text)]">
+                {selected.title || "(untitled)"}
+              </h2>
               <button
                 onClick={() => setSelected(null)}
-                className="rounded bg-gray-100 px-2 py-1 text-sm dark:bg-gray-800"
+                className="nicom-elev px-2 py-1 text-sm text-[var(--color-nicom-muted)] hover:text-[var(--color-nicom-text)]"
               >
                 ×
               </button>
             </div>
             <dl className="space-y-2 text-sm">
-              <div className="flex justify-between border-b border-gray-100 pb-2 dark:border-gray-800">
-                <dt className="text-gray-500">SKU</dt>
-                <dd className="font-mono">{selected.sku}</dd>
-              </div>
-              <div className="flex justify-between border-b border-gray-100 pb-2 dark:border-gray-800">
-                <dt className="text-gray-500">Channel</dt>
-                <dd>{selected.channel}</dd>
-              </div>
-              <div className="flex justify-between border-b border-gray-100 pb-2 dark:border-gray-800">
-                <dt className="text-gray-500">Brand</dt>
-                <dd>{selected.brand}</dd>
-              </div>
-              <div className="flex justify-between border-b border-gray-100 pb-2 dark:border-gray-800">
-                <dt className="text-gray-500">Status</dt>
-                <dd>
-                  <span
-                    className={`rounded px-2 py-0.5 text-xs ${
-                      STATUS_COLOR[selected.status] || "bg-gray-100"
-                    }`}
-                  >
-                    {selected.status || "—"}
-                  </span>
-                </dd>
-              </div>
-              <div className="flex justify-between border-b border-gray-100 pb-2 dark:border-gray-800">
-                <dt className="text-gray-500">Date</dt>
-                <dd>{selected.date}</dd>
-              </div>
+              {[
+                { label: "SKU", value: <span className="nicom-mono">{selected.sku}</span> },
+                { label: "Channel", value: selected.channel },
+                { label: "Brand", value: selected.brand },
+                {
+                  label: "Status",
+                  value: (
+                    <span className={`rounded px-2 py-0.5 text-xs ${STATUS_COLOR[selected.status] || "bg-[var(--color-nicom-elev)] text-[var(--color-nicom-faint)]"}`}>
+                      {selected.status || "—"}
+                    </span>
+                  ),
+                },
+                { label: "Date", value: selected.date },
+              ].map(({ label, value }) => (
+                <div key={label} className="flex justify-between border-b border-[var(--color-nicom-hairline)] pb-2">
+                  <dt className="text-[var(--color-nicom-faint)]">{label}</dt>
+                  <dd className="text-[var(--color-nicom-text)]">{value}</dd>
+                </div>
+              ))}
               {selected.headline && (
                 <div>
-                  <dt className="text-gray-500">Headline UA</dt>
-                  <dd className="mt-1 rounded bg-gray-50 p-2 text-sm dark:bg-gray-800">
+                  <dt className="text-[var(--color-nicom-faint)]">Headline UA</dt>
+                  <dd className="mt-1 nicom-elev p-2 text-sm text-[var(--color-nicom-muted)]">
                     {selected.headline}
                   </dd>
                 </div>
               )}
               {selected.brief && (
                 <div>
-                  <dt className="text-gray-500">Brief</dt>
-                  <dd className="mt-1 max-h-40 overflow-auto rounded bg-gray-50 p-2 text-sm dark:bg-gray-800">
+                  <dt className="text-[var(--color-nicom-faint)]">Brief</dt>
+                  <dd className="mt-1 max-h-40 overflow-auto nicom-elev p-2 text-sm text-[var(--color-nicom-muted)]">
                     {selected.brief}
                   </dd>
                 </div>
@@ -226,13 +222,13 @@ export default function ContentPlanCalendar() {
                     TikTok: "tiktok",
                   }[selected.channel] || "ig_post"
                 )}`}
-                className="rounded bg-sky-500 px-3 py-1.5 text-sm font-medium text-white"
+                className="rounded bg-[var(--color-accent)] px-3 py-1.5 text-sm font-medium text-white hover:opacity-90"
               >
                 Generate
               </a>
               <a
                 href="/queue"
-                className="rounded bg-gray-100 px-3 py-1.5 text-sm dark:bg-gray-800"
+                className="nicom-elev px-3 py-1.5 text-sm text-[var(--color-nicom-muted)] hover:text-[var(--color-nicom-text)]"
               >
                 Open in Queue
               </a>
