@@ -176,7 +176,7 @@ function GenerateForm() {
       {/* Controls */}
       <div className="onyx-panel">
         <p className="onyx-eyebrow mb-4">Trigger generation</p>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr auto", gap: "16px", alignItems: "end" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr) auto", gap: "16px", alignItems: "end", maxWidth: "900px" }}>
           <label>
             <div className="onyx-h3 mb-2">SKU</div>
             <select value={sku} onChange={e => setSku(e.target.value)} className="onyx-select">
@@ -209,7 +209,7 @@ function GenerateForm() {
       </div>
 
       {/* Output + Preview */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 320px", gap: "16px" }}>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr min(320px, 35%)", gap: "16px" }}>
         {/* Streaming log */}
         <div ref={logRef} className="nicom-mono"
           style={{ borderRadius: "14px", background: "var(--color-nicom-bg)", border: "0.5px solid var(--color-nicom-border)", padding: "16px", color: "var(--color-ok)", minHeight: "320px", maxHeight: "500px", overflowY: "auto", fontSize: "11px", lineHeight: "1.6" }}>
