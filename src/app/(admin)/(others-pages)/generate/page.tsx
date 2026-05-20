@@ -19,6 +19,9 @@ const SKUS = [
 
 const FORMATS = ["ig_post", "ig_stories", "ig_reel", "tiktok", "carousel", "reels_seed"];
 const MODES = ["local", "auto", "platform", "telegram"];
+
+// Formats that require Pletor video API (PLETOR_API_KEY + PLETOR_AGENT_*)
+const VIDEO_FORMATS = new Set(["ig_reel", "tiktok", "reels_seed"]);
 const STORAGE_KEY = "nicom-generate-session";
 const GEN_SIGNAL_KEY = "nicom-last-generation-ts"; // cross-tab signal
 
@@ -47,6 +50,7 @@ function GenerateForm() {
   });
 
   const [mode, setMode] = useState("local");
+  const [pletorOk, setPletorOk] = useState<boolean | null>(null); // null = loading
   const [running, setRunning] = useState(false);
   const [lines, setLines] = useState<string[]>(() => {
     try {
@@ -67,6 +71,21 @@ function GenerateForm() {
   });
 
   const logRef = useRef<HTMLDivElement>(null);
+
+  // Check if Pletor is configured (needed for video formats)
+  useEffect(() => {
+    fetch("/api/settings", { cache: "no-store" })
+      .then(r => r.json())
+      .then(d => {
+        const envKeys: Array<{ key: string; set_in_project: boolean }> = d.env || [];
+        const hasKey = envKeys.find(e => e.key === "PLETOR_API_KEY")?.set_in_project;
+        setPletorOk(Boolean(hasKey));
+      })
+      .catch(() => setPletorOk(false));
+  }, []);
+
+  const isVideoFormat = VIDEO_FORMATS.has(format);
+  const pletorWarning = isVideoFormat && pletorOk === false;
 
   // Sync URL params → state when they change (e.g. navigation from Content Plan)
   useEffect(() => {
@@ -196,9 +215,23 @@ function GenerateForm() {
             </select>
           </label>
         </div>
+        {pletorWarning && (
+          <div className="onyx-callout" style={{ marginBottom: "12px", display: "flex", alignItems: "flex-start", gap: "10px" }}>
+            <span style={{ color: "var(--color-warn)", fontSize: "14px", flexShrink: 0 }}>⚠</span>
+            <div>
+              <strong>Video format requires Pletor API.</strong>{" "}
+              <span style={{ color: "var(--color-nicom-muted)" }}>
+                Format <code className="nicom-mono" style={{ color: "var(--color-warn)" }}>{format}</code> generates video via Pletor.
+                Add <code className="nicom-mono">PLETOR_API_KEY</code> and{" "}
+                <code className="nicom-mono">PLETOR_AGENT_{sku.replace(/-/g,"_").toUpperCase()}</code> to your .env, or choose an image format (ig_post, ig_stories, carousel).
+              </span>
+            </div>
+          </div>
+        )}
         <div className="flex gap-2">
-          <button disabled={running} onClick={run} className="btn-onyx-primary"
-            style={{ padding: "10px 24px", fontSize: "11px" }}>
+          <button disabled={running || (pletorWarning)} onClick={run} className={pletorWarning ? "btn-onyx-ghost" : "btn-onyx-primary"}
+            style={{ padding: "10px 24px", fontSize: "11px", opacity: pletorWarning ? 0.5 : 1 }}
+            title={pletorWarning ? "Configure Pletor first" : undefined}>
             {running ? "Running…" : "▶ Run pipeline"}
           </button>
           <button onClick={clear} className="btn-onyx-ghost"
