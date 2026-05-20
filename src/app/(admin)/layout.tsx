@@ -13,7 +13,7 @@ export default function AdminLayout({
       <AppHeader />
       <main
         className="flex-1"
-        style={{ padding: "32px 40px 60px", maxWidth: "1600px", width: "100%", margin: "0 auto" }}
+        style={{ padding: "32px 40px 60px", maxWidth: "1600px", width: "100%", margin: "0 auto", overflowX: "hidden", minWidth: 0 }}
       >
         {children}
       </main>
