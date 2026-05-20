@@ -165,7 +165,7 @@ function GenerateForm() {
   }
 
   return (
-    <div className="onyx-page space-y-6" style={{ maxWidth: "1200px" }}>
+    <div className="onyx-page space-y-6" style={{ maxWidth: "100%", minWidth: 0 }}>
       {/* Page header */}
       <div>
         <p className="onyx-eyebrow mb-2">Pipeline · manual trigger</p>
@@ -209,7 +209,7 @@ function GenerateForm() {
       </div>
 
       {/* Output + Preview */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr min(320px, 35%)", gap: "16px" }}>
+      <div style={{ display: "grid", gridTemplateColumns: "minmax(0,1fr) minmax(0,300px)", gap: "16px" }}>
         {/* Streaming log */}
         <div ref={logRef} className="nicom-mono"
           style={{ borderRadius: "14px", background: "var(--color-nicom-bg)", border: "0.5px solid var(--color-nicom-border)", padding: "16px", color: "var(--color-ok)", minHeight: "320px", maxHeight: "500px", overflowY: "auto", fontSize: "11px", lineHeight: "1.6" }}>
