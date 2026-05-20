@@ -176,26 +176,26 @@ function GenerateForm() {
       {/* Controls */}
       <div className="onyx-panel">
         <p className="onyx-eyebrow mb-4">Trigger generation</p>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3,minmax(0,1fr)) auto", gap: "16px", alignItems: "end" }}>
-          <label>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: "16px", alignItems: "end" }}>
+          <label style={{ flex: "2 1 200px" }}>
             <div className="onyx-h3 mb-2">SKU</div>
             <select value={sku} onChange={e => setSku(e.target.value)} className="onyx-select">
               {SKUS.map(s => <option key={s}>{s}</option>)}
             </select>
           </label>
-          <label>
+          <label style={{ flex: "1 1 130px" }}>
             <div className="onyx-h3 mb-2">Format</div>
             <select value={format} onChange={e => setFormat(e.target.value)} className="onyx-select">
               {FORMATS.map(f => <option key={f}>{f}</option>)}
             </select>
           </label>
-          <label>
+          <label style={{ flex: "1 1 130px" }}>
             <div className="onyx-h3 mb-2">Approval mode</div>
             <select value={mode} onChange={e => setMode(e.target.value)} className="onyx-select">
               {MODES.map(m => <option key={m}>{m}</option>)}
             </select>
           </label>
-          <div style={{ display: "flex", gap: "8px" }}>
+          <div style={{ display: "flex", gap: "8px", flexShrink: 0 }}>
             <button disabled={running} onClick={run} className="btn-onyx-primary"
               style={{ padding: "10px 20px", fontSize: "11px", whiteSpace: "nowrap" }}>
               {running ? "Running…" : "▶ Run"}
