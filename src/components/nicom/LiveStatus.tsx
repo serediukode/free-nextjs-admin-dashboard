@@ -105,7 +105,7 @@ export default function LiveStatus() {
   const queue = "error" in data.queue ? null : data.queue;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 onyx-page">
       {/* Page header */}
       <div className="mb-8">
         <p className="onyx-eyebrow mb-2">Control Center · Live</p>
@@ -117,7 +117,7 @@ export default function LiveStatus() {
         </p>
       </div>
 
-      <div className="grid grid-cols-12 gap-4">
+      <div className="grid grid-cols-12 gap-4 onyx-stagger">
         <div className="col-span-12 md:col-span-6">
           <Surface num="01" title="Services" accent="ok" hint={`${data.services.filter((s) => s.alive).length}/${data.services.length} alive`}>
             <ul className="space-y-3">

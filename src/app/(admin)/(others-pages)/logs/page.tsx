@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import ScrambleText from "@/components/nicom/ScrambleText";
 
 type LogItem = {
   id: string;
@@ -63,7 +64,7 @@ export default function LogsPage() {
               <th>Output</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="onyx-stagger">
             {items.length === 0 && (
               <tr>
                 <td colSpan={8} style={{ textAlign: "center", color: "var(--color-nicom-faint)" }}>
@@ -74,13 +75,14 @@ export default function LogsPage() {
             {items.map((it) => (
               <tr
                 key={it.id}
+                className="onyx-row border-t border-[var(--color-nicom-border)]"
                 onClick={() => setSelected(it)}
                 style={{ cursor: "pointer" }}
               >
                 <td className="mono-cell">
                   {new Date(it.created).toLocaleString()}
                 </td>
-                <td className="mono-cell">{it.sku}</td>
+                <td className="mono-cell"><ScrambleText text={it.sku} className="nicom-mono" /></td>
                 <td className="mono-cell">{it.format}</td>
                 <td className="mono-cell">{it.model}</td>
                 <td className="mono-cell" style={{ textAlign: "right", color: "var(--color-nicom-text)" }}>

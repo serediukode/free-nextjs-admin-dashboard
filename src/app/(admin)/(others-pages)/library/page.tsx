@@ -90,20 +90,14 @@ export default function LibraryPage() {
           <button
             key={`${it.source}/${it.filename}`}
             onClick={() => setSelected(it)}
+            className="onyx-card-lift"
             style={{
               overflow: "hidden",
               borderRadius: "14px",
               border: "0.5px solid var(--color-nicom-border)",
               background: "var(--color-nicom-surface)",
               textAlign: "left",
-              transition: "border-color 0.2s, background 0.2s",
               cursor: "pointer",
-            }}
-            onMouseEnter={(e) => {
-              (e.currentTarget as HTMLButtonElement).style.background = "var(--color-nicom-elev)";
-            }}
-            onMouseLeave={(e) => {
-              (e.currentTarget as HTMLButtonElement).style.background = "var(--color-nicom-surface)";
             }}
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}

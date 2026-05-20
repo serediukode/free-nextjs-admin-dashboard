@@ -1061,6 +1061,62 @@ span.flatpickr-weekday,
   .brand-vika-slim { background: rgba(91,155,213,0.1); color: var(--color-vika); border: 0.5px solid rgba(91,155,213,0.25); }
   .brand-sbr { background: rgba(163,45,45,0.15); color: #e07a8a; border: 0.5px solid rgba(163,45,45,0.35); }
   .brand-pablo { background: rgba(199,154,76,0.1); color: var(--color-pablo); border: 0.5px solid rgba(199,154,76,0.3); }
+
+  /* ── Entrance animation (Framer Pixels · Projects pattern) ── */
+  @keyframes onyx-enter {
+    from { opacity: 0; transform: translateY(18px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .onyx-stagger > * {
+    animation: onyx-enter 0.5s cubic-bezier(0.2,0.9,0.3,1) both;
+  }
+  .onyx-stagger > *:nth-child(1)  { animation-delay: 0ms; }
+  .onyx-stagger > *:nth-child(2)  { animation-delay: 60ms; }
+  .onyx-stagger > *:nth-child(3)  { animation-delay: 120ms; }
+  .onyx-stagger > *:nth-child(4)  { animation-delay: 180ms; }
+  .onyx-stagger > *:nth-child(5)  { animation-delay: 240ms; }
+  .onyx-stagger > *:nth-child(6)  { animation-delay: 300ms; }
+  .onyx-stagger > *:nth-child(7)  { animation-delay: 360ms; }
+  .onyx-stagger > *:nth-child(8)  { animation-delay: 420ms; }
+  .onyx-stagger > *:nth-child(9)  { animation-delay: 480ms; }
+  .onyx-stagger > *:nth-child(10) { animation-delay: 540ms; }
+  .onyx-stagger > *:nth-child(n+11) { animation-delay: 600ms; }
+
+  /* ── Row stripe hover (Projects Animation left-reveal) ── */
+  .onyx-row {
+    position: relative;
+    overflow: hidden;
+    transition: background-color 0.25s;
+    cursor: pointer;
+  }
+  .onyx-row::before {
+    content: '';
+    position: absolute; left: -20px; top: 0; bottom: 0;
+    width: 0;
+    background: var(--color-pablo);
+    transition: width 0.35s cubic-bezier(0.2,0.9,0.3,1);
+    z-index: 1;
+  }
+  .onyx-row:hover::before { width: 3px; left: -12px; }
+  .onyx-row:hover { background: rgba(255,255,255,0.025); }
+  .onyx-row > * { position: relative; z-index: 2; }
+
+  /* ── Card lift hover ── */
+  .onyx-card-lift {
+    transition: transform 0.35s cubic-bezier(0.2,0.9,0.3,1), border-color 0.25s;
+  }
+  .onyx-card-lift:hover { transform: translateY(-4px); border-color: var(--color-nicom-border-strong) !important; }
+
+  /* ── Kanban card nudge ── */
+  .onyx-card-nudge {
+    transition: border-color 0.25s, transform 0.2s;
+  }
+  .onyx-card-nudge:hover { border-color: var(--color-pablo) !important; transform: translateX(2px); }
+
+  /* ── Page-level entrance wrapper ── */
+  .onyx-page {
+    animation: onyx-enter 0.45s cubic-bezier(0.2,0.9,0.3,1) both;
+  }
 }
 
 /* nicom accent override for dark-mode active nav state — pablo gold */

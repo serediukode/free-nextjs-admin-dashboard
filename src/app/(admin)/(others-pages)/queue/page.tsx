@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import ScrambleText from "@/components/nicom/ScrambleText";
 
 type ContentPlanItem = {
   id: string;
@@ -97,7 +98,7 @@ export default function QueuePage() {
               <th style={{ textAlign: "right" }}>Actions</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="onyx-stagger">
             {items.length === 0 && (
               <tr>
                 <td colSpan={6} style={{ textAlign: "center", color: "var(--color-nicom-faint)" }}>
@@ -106,8 +107,8 @@ export default function QueuePage() {
               </tr>
             )}
             {items.map((it) => (
-              <tr key={it.id}>
-                <td>{it.title || "(untitled)"}</td>
+              <tr key={it.id} className="onyx-row">
+                <td><ScrambleText text={it.title || "(untitled)"} /></td>
                 <td className="mono-cell">{it.sku}</td>
                 <td>{it.channel}</td>
                 <td>{it.brand}</td>

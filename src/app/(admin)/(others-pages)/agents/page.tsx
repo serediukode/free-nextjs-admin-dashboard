@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import ScrambleText from "@/components/nicom/ScrambleText";
 
 type Agent = {
   id: string;
@@ -133,15 +134,15 @@ export default function AgentsPage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 onyx-stagger">
         {AGENTS.map((a) => {
           const status = deriveStatus(hbByAgent[a.id]);
           return (
-            <div key={a.id} className="nicom-surface p-5">
+            <div key={a.id} className="nicom-surface p-5 onyx-card-lift">
               <div className="flex items-start justify-between gap-3">
                 <div>
                   <div className="nicom-mono text-[var(--color-nicom-faint)]">{a.id}</div>
-                  <h2 className="mt-1 text-lg font-semibold text-[var(--color-nicom-text)]">{a.name}</h2>
+                  <h2 className="mt-1 text-lg font-semibold text-[var(--color-nicom-text)]"><ScrambleText text={a.name} /></h2>
                   <p className="text-xs text-[var(--color-nicom-faint)]">{a.role}</p>
                 </div>
                 <span
