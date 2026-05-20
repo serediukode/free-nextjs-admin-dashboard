@@ -3,7 +3,7 @@ import { useEffect, useState, useCallback } from "react";
 
 type LibraryItem = {
   filename: string; sku: string | null; format: string | null;
-  source: "test-output" | "output"; size_kb: number;
+  source: "test-output" | "output" | "tmp"; size_kb: number;
   modified_at: string; modified_ts: number; prompt_log: string | null; url: string;
 };
 type ViewMode = "grid" | "list" | "kanban" | "timeline";
@@ -35,8 +35,13 @@ export default function LibraryPage() {
 
   useEffect(() => {
     load();
-    const id = setInterval(load, 15000);
-    return () => clearInterval(id);
+    const id = setInterval(load, 10000);
+    // Refresh immediately when Generate page signals new result
+    function onStorage(e: StorageEvent) {
+      if (e.key === "nicom-last-generation-ts") load();
+    }
+    window.addEventListener("storage", onStorage);
+    return () => { clearInterval(id); window.removeEventListener("storage", onStorage); };
   }, [load]);
 
   // ── Grid View ──

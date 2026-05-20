@@ -37,7 +37,12 @@ export default function LogsPage() {
   useEffect(() => {
     load();
     const id = setInterval(load, 10000);
-    return () => clearInterval(id);
+    // Refresh immediately when Generate page signals new result
+    function onStorage(e: StorageEvent) {
+      if (e.key === "nicom-last-generation-ts") setTimeout(load, 3000); // Notion write delay
+    }
+    window.addEventListener("storage", onStorage);
+    return () => { clearInterval(id); window.removeEventListener("storage", onStorage); };
   }, []);
 
   return (

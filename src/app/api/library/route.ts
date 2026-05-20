@@ -11,7 +11,7 @@ interface LibraryItem {
   filename: string;
   sku: string | null;
   format: string | null;
-  source: "test-output" | "output";
+  source: "test-output" | "output" | "tmp";
   size_kb: number;
   modified_at: string; // ISO
   modified_ts: number; // for sorting
@@ -31,7 +31,7 @@ function parseFilename(name: string): { sku: string | null; format: string | nul
   return { sku: null, format: null };
 }
 
-function listDir(absDir: string, source: "test-output" | "output"): LibraryItem[] {
+function listDir(absDir: string, source: "test-output" | "output" | "tmp"): LibraryItem[] {
   if (!fs.existsSync(absDir)) return [];
   const out: LibraryItem[] = [];
   for (const name of fs.readdirSync(absDir)) {
@@ -64,9 +64,12 @@ export async function GET(req: NextRequest) {
   const fmt = searchParams.get("format");
   const limit = Number(searchParams.get("limit") || 50);
 
+  // Also scan pipeline default output dir + any NICOM_OUTPUT_DIR override
+  const pipelineOutputDir = process.env.NICOM_OUTPUT_DIR || "/tmp/nicom-outputs";
   const all = [
     ...listDir(path.join(NICOM_PROJECT_ROOT, "test-output"), "test-output"),
     ...listDir(path.join(NICOM_PROJECT_ROOT, "output"), "output"),
+    ...listDir(pipelineOutputDir, "tmp"),
   ];
 
   let filtered = all;
