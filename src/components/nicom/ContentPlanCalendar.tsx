@@ -38,7 +38,13 @@ function daysInMonth(d: Date) {
   return new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate();
 }
 
-export default function ContentPlanCalendar({ externalItems }: { externalItems?: Item[] }) {
+export default function ContentPlanCalendar({
+  externalItems,
+  onSelect,
+}: {
+  externalItems?: Item[];
+  onSelect?: (item: Item) => void;
+}) {
   const [items, setItems] = useState<Item[]>(externalItems || []);
   const [err, setErr] = useState<string | null>(null);
   const [cursor, setCursor] = useState(() => startOfMonth(new Date()));
@@ -140,7 +146,7 @@ export default function ContentPlanCalendar({ externalItems }: { externalItems?:
                   {events.slice(0, 4).map((it) => (
                     <button
                       key={it.id}
-                      onClick={() => setSelected(it)}
+                      onClick={() => { if (onSelect) { onSelect(it); } else { setSelected(it); } }}
                       className={`block w-full truncate rounded px-1.5 py-0.5 text-left text-[11px] hover:opacity-80 ${
                         STATUS_COLOR[it.status] || "bg-[var(--color-nicom-elev)] text-[var(--color-nicom-muted)]"
                       } ${BRAND_BORDER[it.brand] || ""}`}

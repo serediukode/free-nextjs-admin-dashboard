@@ -15,6 +15,12 @@ const STATUSES = ["In Brief", "Approved", "In Production", "Published", "Rejecte
 const BRANDS   = ["VIKA Main", "VIKA Slim", "SBR", "Pablo"];
 const CHANNELS = ["IG Post", "IG Stories", "IG Reel", "TikTok", "Carousel", "Reels Seed"];
 
+const SKUS = [
+  "vika-deep-blue","vika-ice-cool","vika-strawberry-mojito",
+  "vika-frozen-mint","vika-cherry-berry","vika-strawberry-ice",
+  "sober-slim-red","pablo-ice-cold","pablo-excl-frosted-ice","pablo-excl-dark-cherry",
+];
+
 const STATUS_COLOR: Record<string, string> = {
   "In Brief":      "onyx-pill-warn",
   "Approved":      "onyx-pill-ok",
@@ -62,6 +68,12 @@ export default function ContentPlanPage() {
   const [selected, setSelected] = useState<Item | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
 
+  // CRUD state
+  const [editing, setEditing]   = useState<Item | null>(null);
+  const [creating, setCreating] = useState(false);
+  const [saving, setSaving]     = useState(false);
+  const [genItem, setGenItem]   = useState<Item | null>(null);
+
   const load = useCallback(async () => {
     try {
       const res = await fetch("/api/content-plan", { cache: "no-store" });
@@ -96,6 +108,37 @@ export default function ContentPlanPage() {
     finally { setBusy(null); }
   }
 
+  async function saveItem(item: Item) {
+    setSaving(true);
+    try {
+      const res = await fetch("/api/content-plan", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(item),
+      });
+      if (!res.ok) throw new Error(await res.text());
+      await load();
+      setEditing(null);
+      setSelected(null);
+    } catch (e) { setErr(String(e)); }
+    finally { setSaving(false); }
+  }
+
+  async function createItem(item: Partial<Item>) {
+    setSaving(true);
+    try {
+      const res = await fetch("/api/content-plan", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(item),
+      });
+      if (!res.ok) throw new Error(await res.text());
+      await load();
+      setCreating(false);
+    } catch (e) { setErr(String(e)); }
+    finally { setSaving(false); }
+  }
+
   function FilterPill({ label, active, onClick }: { label: string; active: boolean; onClick: () => void }) {
     return (
       <button
@@ -122,7 +165,7 @@ export default function ContentPlanPage() {
               <tr><td colSpan={7} style={{ textAlign: "center", color: "var(--color-nicom-faint)", padding: "32px" }}>No entries match this filter.</td></tr>
             )}
             {filtered.map(it => (
-              <tr key={it.id} className="onyx-row" onClick={() => setSelected(it)}>
+              <tr key={it.id} className="onyx-row" onClick={() => setEditing(it)}>
                 <td style={{ ...brandBorder(it.brand), paddingLeft: "18px", color: "var(--color-nicom-text)" }}>{it.title || "(untitled)"}</td>
                 <td><span className="nicom-mono" style={{ color: "var(--color-nicom-faint)", fontSize: "11px" }}>{it.sku}</span></td>
                 <td style={{ color: "var(--color-nicom-muted)" }}>{it.channel}</td>
@@ -166,7 +209,7 @@ export default function ContentPlanPage() {
                   <div
                     key={it.id}
                     className="onyx-card-nudge"
-                    onClick={() => setSelected(it)}
+                    onClick={() => setEditing(it)}
                     style={{ background: "rgba(255,255,255,0.02)", border: "0.5px solid var(--color-nicom-border)", borderRadius: "5px", padding: "10px 12px", marginBottom: "8px", cursor: "pointer", ...brandBorder(it.brand) }}
                   >
                     <div style={{ fontFamily: "var(--font-serif)", fontStyle: "italic", fontSize: "14px", color: "var(--color-nicom-text)", letterSpacing: "-0.2px", marginBottom: "6px", lineHeight: "1.25" }}>
@@ -208,17 +251,17 @@ export default function ContentPlanPage() {
       <div style={{ position: "relative", paddingLeft: "32px" }}>
         <div style={{ position: "absolute", left: "10px", top: "20px", bottom: "20px", width: "1px", background: "rgba(255,255,255,0.08)" }} />
         <div className="onyx-stagger">
-          {dates.map(date => (
-            <div key={date} style={{ marginBottom: "28px", position: "relative" }}>
+          {dates.map(d => (
+            <div key={d} style={{ marginBottom: "28px", position: "relative" }}>
               <div style={{ position: "absolute", left: "-27px", top: "4px", width: "11px", height: "11px", borderRadius: "50%", background: "var(--color-nicom-bg)", border: "1.5px solid var(--color-pablo)" }} />
               <div className="onyx-eyebrow" style={{ marginBottom: "10px", color: "var(--color-pablo)" }}>
-                {new Date(date).toLocaleDateString("uk-UA", { weekday: "short", day: "numeric", month: "short", year: "numeric" }).toUpperCase()}
+                {new Date(d).toLocaleDateString("uk-UA", { weekday: "short", day: "numeric", month: "short", year: "numeric" }).toUpperCase()}
               </div>
-              {groups[date].map(it => (
+              {groups[d].map(it => (
                 <div
                   key={it.id}
                   className="onyx-row"
-                  onClick={() => setSelected(it)}
+                  onClick={() => setEditing(it)}
                   style={{ display: "grid", gridTemplateColumns: "28px 1fr auto", gap: "14px", alignItems: "center", padding: "12px 14px", marginBottom: "5px", background: "rgba(255,255,255,0.02)", borderRadius: "6px", ...brandBorder(it.brand) }}
                 >
                   <div style={{ width: "28px", height: "28px", borderRadius: "4px", background: BRAND_COLOR[it.brand] || "var(--color-nicom-elev)" }} />
@@ -236,7 +279,7 @@ export default function ContentPlanPage() {
               <div style={{ position: "absolute", left: "-27px", top: "4px", width: "11px", height: "11px", borderRadius: "50%", background: "var(--color-nicom-bg)", border: "1.5px solid var(--color-nicom-border-strong)" }} />
               <div className="onyx-eyebrow" style={{ marginBottom: "10px" }}>Undated</div>
               {undated.map(it => (
-                <div key={it.id} className="onyx-row" onClick={() => setSelected(it)}
+                <div key={it.id} className="onyx-row" onClick={() => setEditing(it)}
                   style={{ display: "grid", gridTemplateColumns: "28px 1fr auto", gap: "14px", alignItems: "center", padding: "12px 14px", marginBottom: "5px", background: "rgba(255,255,255,0.02)", borderRadius: "6px", ...brandBorder(it.brand) }}>
                   <div style={{ width: "28px", height: "28px", borderRadius: "4px", background: BRAND_COLOR[it.brand] || "var(--color-nicom-elev)" }} />
                   <div>
@@ -256,51 +299,217 @@ export default function ContentPlanPage() {
     );
   }
 
-  // ── DETAIL MODAL (shared across views) ──
+  // ── DETAIL / EDIT MODAL ──
   function DetailModal() {
-    if (!selected) return null;
-    const fmt = CHANNEL_FORMAT[selected.channel] || "ig_post";
+    if (!editing) return null;
+    const item = editing;
+    const [draft, setDraft] = useState<Item>({ ...item });
+    const isDirty = JSON.stringify(draft) !== JSON.stringify(item);
+
+    function field(label: string, key: keyof Item, type: "text" | "textarea" | "select", opts?: string[]) {
+      return (
+        <div key={key} style={{ marginBottom: "12px" }}>
+          <div className="onyx-h3 mb-1">{label}</div>
+          {type === "textarea" ? (
+            <textarea value={String(draft[key] || "")} rows={3}
+              onChange={e => setDraft(d => ({ ...d, [key]: e.target.value }))}
+              style={{ width: "100%", padding: "8px 12px", background: "var(--color-nicom-elev)", border: "0.5px solid var(--color-nicom-border)", borderRadius: "4px", color: "var(--color-nicom-text)", fontFamily: "var(--font-mono)", fontSize: "12px", resize: "vertical", boxSizing: "border-box" }} />
+          ) : type === "select" && opts ? (
+            <select value={String(draft[key] || "")} onChange={e => setDraft(d => ({ ...d, [key]: e.target.value }))} className="onyx-select" style={{ width: "100%" }}>
+              <option value="">—</option>
+              {opts.map(o => <option key={o}>{o}</option>)}
+            </select>
+          ) : (
+            <input type={key === "date" ? "date" : "text"} value={String(draft[key] || "")}
+              onChange={e => setDraft(d => ({ ...d, [key]: e.target.value }))}
+              style={{ width: "100%", padding: "8px 12px", background: "var(--color-nicom-elev)", border: "0.5px solid var(--color-nicom-border)", borderRadius: "4px", color: "var(--color-nicom-text)", fontFamily: "var(--font-mono)", fontSize: "12px", boxSizing: "border-box" }} />
+          )}
+        </div>
+      );
+    }
+
     return (
-      <div className="onyx-modal-backdrop" onClick={() => setSelected(null)}>
-        <div className="onyx-modal" style={{ width: "min(560px,96vw)", maxHeight: "90vh", overflow: "auto" }} onClick={e => e.stopPropagation()}>
-          <div style={{ padding: "20px 24px", borderBottom: "0.5px solid var(--color-nicom-border)", display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+      <div className="onyx-modal-backdrop" onClick={() => { setSelected(null); setEditing(null); }}>
+        <div className="onyx-modal" style={{ width: "min(640px,96vw)", maxHeight: "90vh", overflow: "auto", padding: "24px" }}
+          onClick={e => e.stopPropagation()}>
+
+          {/* Header */}
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "20px", borderBottom: "0.5px solid var(--color-nicom-border)", paddingBottom: "16px" }}>
             <div>
-              <h2 style={{ fontFamily: "var(--font-serif)", fontStyle: "italic", fontSize: "20px", color: "var(--color-nicom-text)", letterSpacing: "-0.3px" }}>{selected.title || "(untitled)"}</h2>
-              <div className="nicom-mono" style={{ fontSize: "10px", color: "var(--color-nicom-faint)", letterSpacing: "1px", textTransform: "uppercase", marginTop: "4px" }}>{selected.sku} · {selected.channel} · {selected.brand}</div>
+              <h2 style={{ fontFamily: "var(--font-serif)", fontStyle: "italic", fontSize: "20px", color: "var(--color-nicom-text)", letterSpacing: "-0.3px" }}>{draft.title || "(untitled)"}</h2>
+              <div className="nicom-mono" style={{ fontSize: "10px", color: "var(--color-nicom-faint)", marginTop: "4px" }}>{draft.sku} · {draft.channel} · {draft.brand}</div>
             </div>
-            <button className="btn-onyx-ghost" style={{ padding: "6px 12px", fontSize: "16px", lineHeight: 1 }} onClick={() => setSelected(null)}>✕</button>
+            <button className="btn-onyx-ghost" style={{ padding: "6px 12px", fontSize: "14px" }}
+              onClick={() => { setSelected(null); setEditing(null); }}>✕</button>
           </div>
-          <div style={{ padding: "20px 24px" }}>
-            <dl style={{ display: "flex", flexDirection: "column", gap: "10px", fontSize: "13px" }}>
-              {[
-                { label: "Status", value: <span className={`onyx-pill ${STATUS_COLOR[selected.status] || "onyx-pill-faint"}`}>{selected.status || "—"}</span> },
-                { label: "Date",   value: <span className="nicom-mono">{selected.date || "—"}</span> },
-                { label: "Brand",  value: selected.brand },
-                { label: "Channel", value: selected.channel },
-              ].map(({ label, value }) => (
-                <div key={label} style={{ display: "flex", justifyContent: "space-between", paddingBottom: "8px", borderBottom: "0.5px solid var(--color-nicom-border)" }}>
-                  <dt style={{ color: "var(--color-nicom-faint)", fontFamily: "var(--font-mono)", fontSize: "10px", letterSpacing: "1px", textTransform: "uppercase" }}>{label}</dt>
-                  <dd style={{ color: "var(--color-nicom-text)" }}>{value}</dd>
-                </div>
-              ))}
-              {selected.headline && (
-                <div style={{ paddingBottom: "8px", borderBottom: "0.5px solid var(--color-nicom-border)" }}>
-                  <dt style={{ color: "var(--color-nicom-faint)", fontFamily: "var(--font-mono)", fontSize: "10px", letterSpacing: "1px", textTransform: "uppercase", marginBottom: "6px" }}>Headline UA</dt>
-                  <dd style={{ color: "var(--color-nicom-muted)", fontFamily: "var(--font-serif)", fontStyle: "italic", fontSize: "15px" }}>{selected.headline}</dd>
-                </div>
-              )}
-              {selected.brief && (
-                <div>
-                  <dt style={{ color: "var(--color-nicom-faint)", fontFamily: "var(--font-mono)", fontSize: "10px", letterSpacing: "1px", textTransform: "uppercase", marginBottom: "6px" }}>Brief</dt>
-                  <dd style={{ color: "var(--color-nicom-muted)", background: "var(--color-nicom-elev)", border: "0.5px solid var(--color-nicom-border)", borderRadius: "6px", padding: "10px 14px", fontSize: "13px", lineHeight: "1.6", maxHeight: "120px", overflow: "auto" }}>{selected.brief}</dd>
-                </div>
-              )}
-            </dl>
-            <div style={{ display: "flex", gap: "8px", marginTop: "20px" }}>
-              <a href={`/generate?sku=${encodeURIComponent(selected.sku)}&format=${fmt}`} className="btn-onyx-primary" style={{ textDecoration: "none" }}>◇ Generate</a>
-              <button className="btn-onyx-ghost" onClick={() => setStatus(selected, "Approved")} disabled={busy === selected.id}>✓ Approve</button>
-              <button className="btn-onyx-danger" onClick={() => setStatus(selected, "Rejected")} disabled={busy === selected.id}>✕ Reject</button>
+
+          {/* Fields */}
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0 16px" }}>
+            <div>
+              {field("Title", "title", "text")}
+              {field("SKU", "sku", "select", SKUS)}
+              {field("Channel", "channel", "select", CHANNELS)}
+              {field("Brand", "brand", "select", BRANDS)}
             </div>
+            <div>
+              {field("Status", "status", "select", STATUSES)}
+              {field("Date", "date", "text")}
+              {field("Headline UA", "headline", "text")}
+            </div>
+          </div>
+          {field("Brief", "brief", "textarea")}
+
+          {/* Actions */}
+          <div style={{ display: "flex", gap: "8px", marginTop: "16px", flexWrap: "wrap" }}>
+            {isDirty && (
+              <button disabled={saving} onClick={() => saveItem(draft)} className="btn-onyx-primary"
+                style={{ padding: "8px 18px", fontSize: "10px" }}>
+                {saving ? "Saving…" : "✓ Save changes"}
+              </button>
+            )}
+            <button onClick={() => { setGenItem(draft); setSelected(null); setEditing(null); }}
+              className="btn-onyx-ghost" style={{ padding: "8px 18px", fontSize: "10px" }}>
+              ◇ Generate
+            </button>
+            <button onClick={() => { setEditing(null); setSelected(null); }} className="btn-onyx-ghost"
+              style={{ padding: "8px 14px", fontSize: "10px" }}>
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ── NEW POST MODAL ──
+  function NewPostModal() {
+    const [draft, setDraft] = useState<Partial<Item>>({ status: "In Brief", brand: "VIKA Main", channel: "IG Post" });
+
+    function field(label: string, key: string, type: "text" | "textarea" | "select", opts?: string[]) {
+      const val = (draft as Record<string, string>)[key] || "";
+      return (
+        <div key={key} style={{ marginBottom: "12px" }}>
+          <div className="onyx-h3 mb-1">{label}</div>
+          {type === "textarea" ? (
+            <textarea value={val} rows={3} onChange={e => setDraft(d => ({ ...d, [key]: e.target.value }))}
+              style={{ width: "100%", padding: "8px 12px", background: "var(--color-nicom-elev)", border: "0.5px solid var(--color-nicom-border)", borderRadius: "4px", color: "var(--color-nicom-text)", fontFamily: "var(--font-mono)", fontSize: "12px", resize: "vertical", boxSizing: "border-box" }} />
+          ) : type === "select" && opts ? (
+            <select value={val} onChange={e => setDraft(d => ({ ...d, [key]: e.target.value }))} className="onyx-select" style={{ width: "100%" }}>
+              <option value="">—</option>
+              {opts.map(o => <option key={o}>{o}</option>)}
+            </select>
+          ) : (
+            <input type={key === "date" ? "date" : "text"} value={val} onChange={e => setDraft(d => ({ ...d, [key]: e.target.value }))}
+              style={{ width: "100%", padding: "8px 12px", background: "var(--color-nicom-elev)", border: "0.5px solid var(--color-nicom-border)", borderRadius: "4px", color: "var(--color-nicom-text)", fontFamily: "var(--font-mono)", fontSize: "12px", boxSizing: "border-box" }} />
+          )}
+        </div>
+      );
+    }
+
+    return (
+      <div className="onyx-modal-backdrop" onClick={() => setCreating(false)}>
+        <div className="onyx-modal" style={{ width: "min(600px,96vw)", maxHeight: "90vh", overflow: "auto", padding: "24px" }}
+          onClick={e => e.stopPropagation()}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px", borderBottom: "0.5px solid var(--color-nicom-border)", paddingBottom: "16px" }}>
+            <h2 style={{ fontFamily: "var(--font-serif)", fontStyle: "italic", fontSize: "20px", color: "var(--color-nicom-text)", letterSpacing: "-0.3px" }}>New Post</h2>
+            <button className="btn-onyx-ghost" style={{ padding: "6px 12px" }} onClick={() => setCreating(false)}>✕</button>
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0 16px" }}>
+            <div>
+              {field("Title", "title", "text")}
+              {field("SKU", "sku", "select", SKUS)}
+              {field("Channel", "channel", "select", CHANNELS)}
+            </div>
+            <div>
+              {field("Brand", "brand", "select", BRANDS)}
+              {field("Status", "status", "select", STATUSES)}
+              {field("Date", "date", "text")}
+            </div>
+          </div>
+          {field("Headline UA", "headline", "text")}
+          {field("Brief", "brief", "textarea")}
+          <div style={{ display: "flex", gap: "8px", marginTop: "16px" }}>
+            <button disabled={saving || !draft.title} onClick={() => createItem(draft)} className="btn-onyx-primary"
+              style={{ padding: "8px 18px", fontSize: "10px" }}>
+              {saving ? "Creating…" : "+ Create post"}
+            </button>
+            <button onClick={() => setCreating(false)} className="btn-onyx-ghost"
+              style={{ padding: "8px 14px", fontSize: "10px" }}>Cancel</button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ── GENERATE MODAL ──
+  function GenerateModal() {
+    if (!genItem) return null;
+    const item = genItem;
+    const [models, setModels] = useState<string[]>([]);
+    const [model, setModel] = useState("gemini-2.5-flash");
+    const [prompt, setPrompt] = useState(item.brief || item.headline || "");
+    const [mode, setMode] = useState("local");
+    const fmt = CHANNEL_FORMAT[item.channel] || "ig_post";
+
+    useEffect(() => {
+      fetch("/api/models", { cache: "no-store" }).then(r => r.json())
+        .then(d => { if (d.available?.length) setModels(d.available); })
+        .catch(() => {});
+    }, []);
+
+    function launch() {
+      try {
+        sessionStorage.setItem("nicom-generate-session", JSON.stringify({
+          sku: item.sku, format: fmt, lines: [], finishedCode: null, latest: null
+        }));
+      } catch {}
+      window.location.href = `/generate?sku=${encodeURIComponent(item.sku)}&format=${fmt}`;
+    }
+
+    return (
+      <div className="onyx-modal-backdrop" onClick={() => setGenItem(null)}>
+        <div className="onyx-modal" style={{ width: "min(560px,96vw)", maxHeight: "90vh", overflow: "auto", padding: "24px" }}
+          onClick={e => e.stopPropagation()}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px", borderBottom: "0.5px solid var(--color-nicom-border)", paddingBottom: "12px" }}>
+            <div>
+              <h2 style={{ fontFamily: "var(--font-serif)", fontStyle: "italic", fontSize: "18px", color: "var(--color-nicom-text)" }}>Generate</h2>
+              <div className="nicom-mono" style={{ fontSize: "10px", color: "var(--color-nicom-faint)", marginTop: "2px" }}>{item.sku} · {fmt}</div>
+            </div>
+            <button className="btn-onyx-ghost" style={{ padding: "6px 12px" }} onClick={() => setGenItem(null)}>✕</button>
+          </div>
+
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px", marginBottom: "12px" }}>
+            <div>
+              <div className="onyx-h3 mb-1">Model</div>
+              <select value={model} onChange={e => setModel(e.target.value)} className="onyx-select" style={{ width: "100%" }}>
+                {models.length ? models.map(m => <option key={m}>{m}</option>) : <option>{model}</option>}
+              </select>
+            </div>
+            <div>
+              <div className="onyx-h3 mb-1">Approval mode</div>
+              <select value={mode} onChange={e => setMode(e.target.value)} className="onyx-select" style={{ width: "100%" }}>
+                {["local", "auto", "platform", "telegram"].map(m => <option key={m}>{m}</option>)}
+              </select>
+            </div>
+          </div>
+
+          <div style={{ marginBottom: "16px" }}>
+            <div className="onyx-h3 mb-1">Prompt / Brief <span style={{ color: "var(--color-nicom-dim)", fontWeight: 400 }}>(editable)</span></div>
+            <textarea value={prompt} rows={5} onChange={e => setPrompt(e.target.value)}
+              placeholder="Leave empty to use pipeline's auto-generated prompt from brand DNA"
+              style={{ width: "100%", padding: "10px 12px", background: "var(--color-nicom-elev)", border: "0.5px solid var(--color-nicom-border)", borderRadius: "4px", color: "var(--color-nicom-text)", fontFamily: "var(--font-mono)", fontSize: "11px", resize: "vertical", lineHeight: 1.6, boxSizing: "border-box" }} />
+            <div className="nicom-mono" style={{ fontSize: "9px", color: "var(--color-nicom-faint)", marginTop: "4px" }}>
+              This brief is passed as context to the LangGraph pipeline
+            </div>
+          </div>
+
+          <div style={{ display: "flex", gap: "8px" }}>
+            <button onClick={launch} className="btn-onyx-primary" style={{ padding: "10px 20px", fontSize: "10px" }}>
+              ▶ Run pipeline
+            </button>
+            <button onClick={() => setGenItem(null)} className="btn-onyx-ghost" style={{ padding: "10px 14px", fontSize: "10px" }}>
+              Cancel
+            </button>
           </div>
         </div>
       </div>
@@ -310,10 +519,15 @@ export default function ContentPlanPage() {
   return (
     <div className="onyx-page space-y-6">
       {/* Page header */}
-      <div>
-        <p className="onyx-eyebrow mb-2">Content Plan · {filtered.length} entries</p>
-        <h1 style={{ fontFamily: "var(--font-serif)", fontStyle: "italic", fontSize: "32px", letterSpacing: "-0.3px", color: "var(--color-nicom-text)", marginBottom: "8px" }}>Content Plan</h1>
-        <p style={{ color: "var(--color-nicom-muted)", fontSize: "13px" }}>Notion Content Plan · {items.length} total · Calendar / Table / Kanban / Timeline</p>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+        <div>
+          <p className="onyx-eyebrow mb-2">Content Plan · {filtered.length} entries</p>
+          <h1 style={{ fontFamily: "var(--font-serif)", fontStyle: "italic", fontSize: "32px", letterSpacing: "-0.3px", color: "var(--color-nicom-text)", marginBottom: "8px" }}>Content Plan</h1>
+          <p style={{ color: "var(--color-nicom-muted)", fontSize: "13px" }}>Notion Content Plan · {items.length} total · Calendar / Table / Kanban / Timeline</p>
+        </div>
+        <button onClick={() => setCreating(true)} className="btn-onyx-primary" style={{ padding: "10px 18px", fontSize: "10px", whiteSpace: "nowrap" }}>
+          + New Post
+        </button>
       </div>
 
       {/* View mode switcher */}
@@ -341,12 +555,15 @@ export default function ContentPlanPage() {
       {err && <div className="onyx-callout onyx-callout-danger"><strong>Error:</strong> {err}</div>}
 
       {/* Views */}
-      {view === "calendar"  && <ContentPlanCalendar externalItems={filtered} />}
+      {view === "calendar"  && <ContentPlanCalendar externalItems={filtered} onSelect={(it) => setEditing(it as Item)} />}
       {view === "table"     && <TableView />}
       {view === "kanban"    && <KanbanView />}
       {view === "timeline"  && <TimelineView />}
 
-      <DetailModal />
+      {/* Modals */}
+      {editing  && <DetailModal />}
+      {creating && <NewPostModal />}
+      {genItem  && <GenerateModal />}
     </div>
   );
 }
