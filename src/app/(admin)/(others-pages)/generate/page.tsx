@@ -147,6 +147,13 @@ function GenerateForm() {
         if (top) {
           setLatest({ url: top.url, filename: top.filename, size_kb: top.size_kb, sku, format });
           // Signal Library and Logs to refresh
+          // BroadcastChannel works same-tab AND cross-tab (unlike localStorage storage event)
+          try {
+            const bc = new BroadcastChannel("nicom-gen-refresh");
+            bc.postMessage({ type: "generation-complete", sku, format, ts: Date.now() });
+            bc.close();
+          } catch {}
+          // Keep localStorage as fallback for cross-tab in browsers without BroadcastChannel
           localStorage.setItem(GEN_SIGNAL_KEY, Date.now().toString());
         } else if (attempt < 5) {
           // Retry up to 5 times (10s total) — pipeline may still be writing

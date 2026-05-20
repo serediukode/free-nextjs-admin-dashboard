@@ -51,6 +51,11 @@ export default function QueuePage() {
         body: JSON.stringify({ page_id: item.id, status }),
       });
       if (!res.ok) throw new Error(await res.text());
+      const json = await res.json();
+      // Show warning if dispatch failed (Notion updated but publish didn't fire)
+      if (status === "Approved" && json.dispatched === false && json.dispatchError) {
+        setErr(`⚠ Approved in Notion but publish dispatch failed: ${json.dispatchError}. Check N8N_PUBLISH_WEBHOOK_URL in settings.`);
+      }
       await load();
     } catch (e) {
       setErr(String(e));

@@ -102,6 +102,11 @@ export default function ContentPlanPage() {
         body: JSON.stringify({ page_id: item.id, status }),
       });
       if (!res.ok) throw new Error(await res.text());
+      const json = await res.json();
+      // Show warning if dispatch failed (Notion updated but publish didn't fire)
+      if (status === "Approved" && json.dispatched === false && json.dispatchError) {
+        setErr(`⚠ Approved in Notion but publish dispatch failed: ${json.dispatchError}. Check N8N_PUBLISH_WEBHOOK_URL in settings.`);
+      }
       await load();
       if (selected?.id === item.id) setSelected({ ...item, status });
     } catch (e) { setErr(String(e)); }
@@ -457,12 +462,22 @@ export default function ContentPlanPage() {
         .catch(() => {});
     }, []);
 
-    function launch() {
+    async function launch() {
       try {
         sessionStorage.setItem("nicom-generate-session", JSON.stringify({
           sku: item.sku, format: fmt, lines: [], finishedCode: null, latest: null
         }));
       } catch {}
+      // Save selected model override before navigating
+      if (model) {
+        try {
+          await fetch("/api/models", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ task: "prompt_generate", model }),
+          });
+        } catch {}
+      }
       window.location.href = `/generate?sku=${encodeURIComponent(item.sku)}&format=${fmt}`;
     }
 

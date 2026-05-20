@@ -36,12 +36,22 @@ export default function LibraryPage() {
   useEffect(() => {
     load();
     const id = setInterval(load, 10000);
-    // Refresh immediately when Generate page signals new result
+    // BroadcastChannel: same-tab + cross-tab
+    let bc: BroadcastChannel | null = null;
+    try {
+      bc = new BroadcastChannel("nicom-gen-refresh");
+      bc.onmessage = (e) => { if (e.data?.type === "generation-complete") load(); };
+    } catch {}
+    // localStorage fallback: cross-tab only
     function onStorage(e: StorageEvent) {
       if (e.key === "nicom-last-generation-ts") load();
     }
     window.addEventListener("storage", onStorage);
-    return () => { clearInterval(id); window.removeEventListener("storage", onStorage); };
+    return () => {
+      clearInterval(id);
+      bc?.close();
+      window.removeEventListener("storage", onStorage);
+    };
   }, [load]);
 
   // ── Grid View ──

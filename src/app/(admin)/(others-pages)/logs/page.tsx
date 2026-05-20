@@ -37,12 +37,16 @@ export default function LogsPage() {
   useEffect(() => {
     load();
     const id = setInterval(load, 10000);
-    // Refresh immediately when Generate page signals new result
+    let bc: BroadcastChannel | null = null;
+    try {
+      bc = new BroadcastChannel("nicom-gen-refresh");
+      bc.onmessage = (e) => { if (e.data?.type === "generation-complete") setTimeout(load, 3000); };
+    } catch {}
     function onStorage(e: StorageEvent) {
       if (e.key === "nicom-last-generation-ts") setTimeout(load, 3000); // Notion write delay
     }
     window.addEventListener("storage", onStorage);
-    return () => { clearInterval(id); window.removeEventListener("storage", onStorage); };
+    return () => { clearInterval(id); bc?.close(); window.removeEventListener("storage", onStorage); };
   }, []);
 
   return (

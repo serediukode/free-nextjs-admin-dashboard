@@ -46,9 +46,14 @@ const AVAILABLE_MODELS = [
 ];
 
 export async function GET() {
-  const raw = fs.existsSync(CONFIG_PATH)
-    ? JSON.parse(fs.readFileSync(CONFIG_PATH, "utf-8"))
-    : {};
+  let raw: Record<string, unknown> = {};
+  try {
+    if (fs.existsSync(CONFIG_PATH)) {
+      raw = JSON.parse(fs.readFileSync(CONFIG_PATH, "utf-8"));
+    }
+  } catch {
+    raw = {}; // corrupted file — start fresh
+  }
   // .model-config.json may carry non-string keys like `_rationale` (object).
   // Strip them so `config` stays Record<string,string> for the UI dropdowns.
   const overrides: Record<string, string> = Object.fromEntries(
